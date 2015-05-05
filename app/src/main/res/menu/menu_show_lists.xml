@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.parse.starter.ShowListsActivity">
+    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" android:showAsAction="never" />
+
+    <item android:id="@+id/action_new"
+        android:icon="@drawable/add_list_50"
+        android:title="@string/add_list"
+        android:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_edit"
+        android:icon="@drawable/pencil_50"
+        android:title="@string/edit_list"
+        android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_sync"
+        android:icon="@drawable/synchronize_50"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_sync">
+    </item>
+</menu>

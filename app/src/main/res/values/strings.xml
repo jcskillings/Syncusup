@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="parse_app_id">YOUR_APPLICATION_ID</string>
+    <string name="parse_client_key">YOUR_CLIENT_KEY</string>
+
+    <string name="hello">Hello World, ParseStarterProjectActivity!</string>
+    <string name="app_name">synqUs</string>
+    <string name="title_activity_todo_list">TodoListActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_todo">Add Todo</string>
+    <string name="edit_todos">Edit</string>
+    <!-- from anywall login -->
+    <string name="login">Log in</string>
+    <string name="signup">Sign up</string>
+    <string name="powered_by">Powered by</string>
+    <string name="parse">Parse</string>
+    <string name="slogan">The world is your wall</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="search_distance">Search Distance</string>
+    <string name="logout_full">Log out of Anywall</string>
+    <string name="post">Post</string>
+    <string name="prompt_post">Post</string>
+    <string name="post_out_of_range">Can\'t view post! Get closer.</string>
+    <string name="progress_post">Posting&#8230;</string>
+    <string name="settings_distance_format">%d feet</string>
+    <string name="activity_post_title">Create a Post</string>
+    <string name="character_count_placeholder">0/140</string>
+
+    <!-- from offline todos -->
+    <string name="not_logged_in">Not logged in</string>
+    <string name="logged_in">Welcome, %1$s</string>
+    <string name="todo_prompt">Enter todo details:</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="action_new">New Todo</string>
+    <string name="action_sync">Sync</string>
+    <string name="action_logout">Log Out</string>
+    <string name="action_login">Log In</string>
+    <string name="login_title">Please log in or sign up to sync your todos to your account.</string>
+    <string name="no_items">No items, click + to get started adding todos.</string>
+
+    <string name="no_lists">No lists, click to add new list</string>
+    <string name="add_list">Add List</string>
+    <string name="edit_list">Edit List</string>
+    <string name="title_activity_show_lists">ShowListsActivity</string>
+    <string name="title_activity_new_list">NewListActivity</string>
+    <string name="list_prompt">Enter List name:</string>
+    <string name="parent_list">List: %1$s</string>
+    <string name="title_activity_share_list">ShareList</string>
+</resources>
