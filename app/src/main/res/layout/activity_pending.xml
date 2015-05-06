@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FriendActivity"
+    android:weightSum="1"
+    android:id="@+id/activity_pending">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/frame1"
+        android:weightSum="1"
+        android:visibility="invisible"
+        android:baselineAligned="false">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/username"
+            android:textSize="22dp"
+            android:layout_weight="0.62" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Accept"
+            android:id="@+id/accept"
+            android:layout_weight="0.38" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/frame3"
+        android:weightSum="1"
+        android:visibility="invisible"
+        android:baselineAligned="false">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/name"
+            android:textSize="22dp"
+            android:layout_gravity="right|top"
+            android:layout_weight="0.62" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Decline"
+            android:id="@+id/decline"
+            android:layout_weight="0.38" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="105dp"
+        android:id="@+id/frame2"
+        android:visibility="invisible"
+        android:layout_weight="0.09">
+
+
+        <CheckBox
+            android:layout_width="99dp"
+            android:layout_height="45dp"
+            android:text="friend"
+            android:id="@+id/friend"
+            android:layout_gravity="left|bottom" />
+
+        <CheckBox
+            android:layout_width="101dp"
+            android:layout_height="45dp"
+            android:text="work"
+            android:id="@+id/work"
+            android:layout_gravity="center_horizontal|bottom" />
+
+        <CheckBox
+            android:layout_width="111dp"
+            android:layout_height="45dp"
+            android:text="personal"
+            android:id="@+id/personal"
+            android:layout_gravity="right|bottom" />
+
+        <CheckBox
+            android:layout_width="111dp"
+            android:layout_height="45dp"
+            android:text="school"
+            android:id="@+id/school"
+            android:layout_gravity="right|center_vertical" />
+
+        <CheckBox
+            android:layout_width="101dp"
+            android:layout_height="45dp"
+            android:text="family"
+            android:id="@+id/family"
+            android:layout_gravity="center"
+            android:checked="false" />
+
+        <CheckBox
+            android:layout_width="106dp"
+            android:layout_height="45dp"
+            android:text="all"
+            android:id="@+id/all"
+            android:layout_gravity="left|center_vertical" />
+
+        <EditText
+            android:layout_width="146dp"
+            android:layout_height="45dp"
+            android:inputType="textPersonName"
+            android:hint="nickname"
+            android:imeOptions="actionDone"
+            android:ems="10"
+            android:id="@+id/nickname"
+            android:layout_gravity="left|top" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:inputType="textPersonName"
+            android:imeOptions="actionDone"
+            android:hint="message"
+            android:ems="10"
+            android:id="@+id/message"
+            android:layout_gravity="right|top" />
+
+    </FrameLayout>
+
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="87dp"
+        android:id="@android:id/list"
+        android:layout_weight="0.22" />
+
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:id="@+id/simple_list_item_1" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="13dp"
+        android:id="@android:id/list"
+        android:layout_weight="0.47" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="19dp"
+        android:id="@+id/simple_list_item_2" />
+
+
+</LinearLayout>

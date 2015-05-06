@@ -4,7 +4,7 @@
     <string name="parse_client_key">YOUR_CLIENT_KEY</string>
 
     <string name="hello">Hello World, ParseStarterProjectActivity!</string>
-    <string name="app_name">synqUs</string>
+    <string name="app_name">synqusup</string>
     <string name="title_activity_todo_list">TodoListActivity</string>
 
     <string name="hello_world">Hello world!</string>
@@ -47,7 +47,18 @@
     <string name="edit_list">Edit List</string>
     <string name="title_activity_show_lists">ShowListsActivity</string>
     <string name="title_activity_new_list">NewListActivity</string>
-    <string name="list_prompt">Enter List name:</string>
+    <string name="list_prompt">List name:</string>
     <string name="parent_list">List: %1$s</string>
     <string name="title_activity_share_list">ShareList</string>
+    <string name="title_activity_edit_permissions">EditPermissionsActivity</string>
+
+    <string name="main_title">Welcome to SyncUs</string>
+    <string name="my_todos_label">My Todos</string>
+    <string name="my_Calendar_label">My Calendar</string>
+    <string name="Notifications_label">Notifications</string>
+    <string name="Shared_Lists_label">Shared Lists</string>
+    <string name="My_friends_label">My Friends</string>
+    <string name="title_activity_notifications">Notifications</string>
+    <string name="notifs_title">Notifications</string>
+    <string name="title_activity_view_notification">ViewNotification</string>
 </resources>

@@ -74,6 +74,10 @@
             android:name=".ShareListActivity"
             android:label="@string/title_activity_share_list" >
         </activity>
+        <activity
+            android:name=".EditPermissionsActivity"
+            android:label="@string/title_activity_edit_permissions" >
+        </activity>
     </application>
 
 </manifest>

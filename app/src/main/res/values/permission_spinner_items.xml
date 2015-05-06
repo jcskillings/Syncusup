@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="permissions_array">
+        <item>master</item>
+        <item>editor</item>
+        <item>watcher</item>
+    </string-array>
+</resources>

@@ -41,6 +41,12 @@ public class List_permissions extends ParseObject{
     public void setUserName(String userName){
         put("username", userName);
     }
+    public void setListPointer(SyncList synclist){
+        put("listPointer", synclist);
+    }
+    public void setListId(String listId){
+        put("list_id", listId);
+    }
 
     public static ParseQuery<List_permissions> getQuery() {
         return ParseQuery.getQuery(List_permissions.class);

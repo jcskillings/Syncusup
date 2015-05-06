@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FriendActivity"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.08"
+        android:weightSum="1">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="View Friends"
+            android:id="@+id/view"
+            android:layout_weight="0.60" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Pending Friends"
+            android:id="@+id/pending"
+            android:layout_weight="0.40" />
+    </LinearLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:inputType="textPersonName"
+        android:hint="Invitation Code"
+        android:ems="10"
+        android:layout_weight="0.08" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Find Friend"
+        android:id="@+id/find"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.10" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ResultFrameLayout"
+        android:visibility="invisible"
+        android:layout_weight="0.29">
+
+        <CheckBox
+            android:layout_width="100dp"
+            android:layout_height="46dp"
+            android:text="all"
+            android:id="@+id/all"
+            android:layout_gravity="left|center_vertical" />
+
+        <CheckBox
+            android:layout_width="97dp"
+            android:layout_height="55dp"
+            android:text="friend"
+            android:id="@+id/friend"
+            android:layout_gravity="center" />
+
+        <CheckBox
+            android:layout_width="108dp"
+            android:layout_height="50dp"
+            android:text="family"
+            android:id="@+id/family"
+            android:layout_gravity="right|center_vertical" />
+
+        <CheckBox
+            android:layout_width="104dp"
+            android:layout_height="60dp"
+            android:text="work"
+            android:id="@+id/work"
+            android:layout_gravity="left|bottom" />
+
+        <CheckBox
+            android:layout_width="103dp"
+            android:layout_height="60dp"
+            android:text="school"
+            android:id="@+id/school"
+            android:layout_gravity="center_horizontal|bottom" />
+
+        <CheckBox
+            android:layout_width="126dp"
+            android:layout_height="55dp"
+            android:text="personal"
+            android:id="@+id/personal"
+            android:layout_gravity="right|bottom" />
+
+        <TextView
+            android:layout_width="132dp"
+            android:layout_height="43dp"
+            android:id="@+id/ResultTextView"
+            android:layout_weight="0.08"
+            android:layout_gravity="left|top" />
+
+        <TextView
+            android:layout_width="133dp"
+            android:layout_height="44dp"
+            android:id="@+id/ResultTextView2"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_weight="0.08" />
+
+        <TextView
+            android:layout_width="87dp"
+            android:layout_height="44dp"
+            android:id="@+id/ResultTextView3"
+            android:layout_gravity="right|top" />
+
+    </FrameLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="Enter nickname:"
+        android:ems="10"
+        android:id="@+id/nickname"
+        android:visibility="invisible"
+        android:layout_weight="0.08" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:hint="Send request with a message.  Enter it here."
+        android:id="@+id/message"
+        android:visibility="invisible"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.25" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Request"
+        android:id="@+id/Add"
+        android:visibility="invisible"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.08" />
+
+</LinearLayout>

@@ -11,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +43,8 @@ public class NewListActivity extends Activity {
     private ListView permissionListView;
     private Button shareButton;
     private Friend myFriend;
+    private List_permissions lp = new List_permissions();
+    private Spinner spinner;
 
     private LayoutInflater inflater;
     private ParseQueryAdapter<List_permissions> permissionsAdapter;
@@ -50,10 +55,11 @@ public class NewListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_list);
         // Fetch the todoId from the Extra data
-        if (getIntent().hasExtra("ID")) {
-            synclistId = getIntent().getExtras().getString("ID");
+        if (getIntent().hasExtra("parentListId")) {
+            synclistId = getIntent().getExtras().getString("parentListId");
+            Log.i("newlistact", "extra sync list id: "+synclistId);
         }
-
+        // set up views
         permissionListView = (ListView) findViewById(R.id.shared_with);
         listName = (EditText) findViewById(R.id.list_name);
         saveButton = (Button) findViewById(R.id.saveButton);
@@ -66,8 +72,9 @@ public class NewListActivity extends Activity {
         ParseQueryAdapter.QueryFactory<List_permissions> factory = new ParseQueryAdapter.QueryFactory<List_permissions>() {
             public ParseQuery<List_permissions> create() {
                 ParseQuery<List_permissions> query = List_permissions.getQuery();
-                //query.orderByDescending("createdAt");
+                query.orderByDescending("createdAt");
                 //query.fromLocalDatastore();
+                query.whereEqualTo("list_id", synclistId);
                 return query;
             }
         };
@@ -75,21 +82,33 @@ public class NewListActivity extends Activity {
         inflater = (LayoutInflater) this
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         permissionsAdapter = new PermissionsAdapter(this, factory);
+        // Attach the query adapter to the view
+        permissionListView.setAdapter(permissionsAdapter);
+
+        permissionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                List_permissions permissions = permissionsAdapter.getItem(position);
+
+
+            }
+        });
         if (synclistId == null) {
             synclist = new SyncList();
             synclist.setUuidString();
         } else {
             listInfoView.setText(synclistId);
             ParseQuery<SyncList> query = SyncList.getQuery();
-            query.fromLocalDatastore();
-            query.whereEqualTo("uuid", synclistId);
+            query.whereEqualTo("objectId", synclistId);
             query.getFirstInBackground(new GetCallback<SyncList>() {
 
                 @Override
                 public void done(SyncList object, ParseException e) {
                     if (!isFinishing()) {
                         synclist = object;
-                        setListProperties();
+                        Log.i("newlistact", "synlistnamt: "+synclist.getName());
+                        listName.setText(synclist.getName());
+                        //setListProperties();
 
                         //deleteButton.setVisibility(View.VISIBLE);
                     }
@@ -98,7 +117,6 @@ public class NewListActivity extends Activity {
             });
 
         }
-
         saveButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -149,8 +167,7 @@ public class NewListActivity extends Activity {
 
         }); */
 
-
-    }
+    } // end on create
 
     private void shareList(){
 
@@ -202,13 +219,86 @@ public class NewListActivity extends Activity {
                     }
 
                 }); */
+        //List_permissions lp = new List_permissions();
+        //Friend friend;
+        //testing to add a new list permission////////////////////////////////
+        /*ParseQuery<Friend> query = Friend.getQuery();
+        query.whereEqualTo("objectId", "pS3BeskLHY");
+        query.getFirstInBackground(new GetCallback<Friend>() {
+            public void done(Friend friend, ParseException e) {
+                if (e == null) {
+                    if (!isFinishing()) {
+                        myFriend = friend;
+                        final List_permissions lp = new List_permissions();
+                        Log.i("newlistAct", "getfriendCallback friendname: "+friend.getUserName());
+                        //lp.setListPointer(synclist);
+                        if (synclist == null) {
+                            Log.i("newlistAct", "synclist nULL?: ");
+                        } else {
+                            Log.i("newlistact", "synclist id:"+synclist.getObjectId());
+                        }
+                        //ParseRelation rel = lp.getRelation("listPointer");
+                        //lp.setListPointer(synclist);
+                        lp.setListId(synclist.getObjectId());
+                        lp.setUserName(myFriend.getUserName());
+                        lp.setPermissionType("editor");
+                        lp.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+
+                                if (isFinishing()) {
+                                    return;
+                                }
+                                if (e == null) {
+                                    ParseRelation rel = synclist.getRelation("permissions");
+                                    rel.add(lp);
+                                    synclist.saveInBackground( new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                          if (isFinishing()){
+                                                return;
+                                           }
+                                           if (e == null){
+                                               ParseRelation r = myFriend.getRelation("friendPermissions");
+                                               r.add(lp);
+                                               myFriend.saveInBackground();
+                                           } else {
+                                               Log.i("newlistact", e.getMessage());
+                                           }
+                                        }
+                                    });
+                                    rel = myFriend.getRelation("friendPermissions");
+                                    rel.add(lp);
+                                    myFriend.saveInBackground();
+
+
+                                    finish();
+                                } else {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Error saving: " + e.getMessage(),
+                                            Toast.LENGTH_LONG).show();
+                                    Log.i("newlistact", e.getMessage());
+                                }
+                            }
+                        });
+
+                    }
+                } else {
+                    Log.i("NewListActivity",
+                            "loadFromParse: Error finding  friend: "
+                                    + e.getMessage());
+                }
+            }
+        }); */
+
         Intent i = new Intent(this, ShareListActivity.class);
+        i.putExtra("listId", synclistId);
         startActivity(i);
     }
     private void getPermissions(){
         ParseQuery<List_permissions> query = List_permissions.getQuery();
         //query.include("parentList");
-        //query.whereEqualTo("parentList", synclist);
+        query.whereEqualTo("list_id", synclistId);
         query.findInBackground(new FindCallback<List_permissions>() {
             public void done(List<List_permissions> permissions, ParseException e) {
                 if (e == null) {
@@ -219,7 +309,7 @@ public class NewListActivity extends Activity {
                     }
                 } else {
                     Log.i("TodoListActivity",
-                            "loadFromParse: Error finding  todos: "
+                            "loadFromParse: Error finding  permissions: "
                                     + e.getMessage());
                 }
             }
