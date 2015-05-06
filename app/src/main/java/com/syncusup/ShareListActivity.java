@@ -126,7 +126,7 @@ public class ShareListActivity extends Activity {
             //parentlist = to-do.getParentList();
             //String parentName = parentlist.getName();
             //ParseUser user = f.getWhoCreated();
-            ParseRelation relatePermissions = friend.getRelation("friendPermissons");
+            ParseRelation relatePermissions = friend.getRelation("friendPermissions");
             ParseQuery<List_permissions> query = relatePermissions.getQuery();
             query.whereEqualTo("list_id", listId);
             query.getFirstInBackground(new GetCallback<List_permissions>() {

@@ -215,7 +215,7 @@ public class PendingFriends extends ListActivity{
 
                     topRequest.put("status", "accepted");
                     topRequest.saveInBackground();
-                    final ParseObject friend = new ParseObject("Friends");
+                    final Friend friend = new Friend();
                     friend.put("username", username);
                     if (name != null) friend.put("name", name);
                     else friend.put("name", "No name given");

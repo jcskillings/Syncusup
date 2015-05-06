@@ -37,6 +37,8 @@ public class FriendActivity extends Activity{
     String name;
     String friendId;
     String password;
+    int objectSize;
+    int objectSize2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,29 +63,132 @@ public class FriendActivity extends Activity{
         final TextView ResultText3 = (TextView)findViewById(R.id.ResultTextView3);
         final FrameLayout ResultFrame = (FrameLayout)findViewById(R.id.ResultFrameLayout);
 
+        final ParseUser currentUser = ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("FriendRequests");
+        query.whereEqualTo("fromUser", currentUser.getObjectId());
+        query.orderByDescending("createDate");
+        query.findInBackground(new FindCallback<ParseObject>() {//if user sent a request, and that
+            //request is now accepted, update that friend and remove the FriendRequest.  Also,
+            //delete newer copies of requests if multiple exist.  Also, update status of all friends
+            //if they changed.
 
-        //ResultFrame.setVisibility(View.GONE);
-
-        view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void done(List<ParseObject> objects, ParseException e) {
+                if(objects.size() > 0){
+                    objectSize = objects.size();
+                    for (int p = 0; p < objectSize; p++) { //removes all old multiple copies in FR
+                        String findName = objects.get(p).getString("toUser");
+                        if(findName.equals(currentUser.getObjectId())){
+                            try {
+                                objectSize--;
+                                objects.get(p).delete();
+                                p--;
+                                Toast.makeText(getApplicationContext(), "Deleted self sent request",
+                                        Toast.LENGTH_LONG).show();
+                            } catch (ParseException e1) {
+                                Toast.makeText(getApplicationContext(), "unable to delete self sent request",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        for(int q = p+1; q < objectSize; q++){
+                            if(objects.get(q).getString("toUser").equals(findName)){
+                                try {
+                                    objectSize--;
+                                    objects.get(q).delete();
+                                    q--;
+                                } catch (ParseException e1) {
+                                    Toast.makeText(getApplicationContext(), "unable to delete",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    //Toast.makeText(getApplicationContext(), "No requests to for this user",
+                    //    Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        ParseRelation relation = currentUser.getRelation("Friends");
+        ParseQuery query2 = relation.getQuery();
+        query2.orderByAscending("createDate");
+        query2.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                //removes all old copies in user relation
+                if(objects.size() > 0){ //removes relation to curruser
+                    objectSize2 = objects.size();
+                    for(int x = 0; x < objectSize2; x++){
+                        String friendId = objects.get(x).getString("friend_id");
+                        if(friendId.equals(currentUser.getObjectId())){
+                            try {
+                                objectSize2--;
+                                objects.get(x).delete();
+                                x--;
+                                Toast.makeText(getApplicationContext(), "Please don't send requests to yourself",
+                                        Toast.LENGTH_LONG).show();
+                            } catch (ParseException e1) {
+                                Toast.makeText(getApplicationContext(), "unable to delete",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+                }
+                if (objects.size() > 1) { //removes new copies of relation to a user
+                    objectSize2 = objects.size();
+                    for(int x = 0; x < objectSize2-1; x++){
+                        String friendId = objects.get(x).getString("friend_id");
+                        for(int y = x+1; y<objectSize2-1;y++){
+                            String nextFriend = objects.get(y).getString("friend_id");
+                            if(friendId.equals(nextFriend)){
+                                try {
+                                    objectSize2--;
+                                    objects.get(y).delete();
+                                    y--;
+                                } catch (ParseException e1) {
+                                    Toast.makeText(getApplicationContext(), "unable to delete",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+            //ResultFrame.setVisibility(View.GONE);
+
+            view.setOnClickListener(new View.OnClickListener()
+
+            {
+                @Override
+                public void onClick (View v){
                 Intent intent = new Intent(FriendActivity.this, ViewFriends.class);
                 startActivity(intent);
             }
-        });
+            }
 
-        pending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
+            );
+
+            pending.setOnClickListener(new View.OnClickListener()
+
+            {
+                @Override
+                public void onClick (View v){
                 Intent intent = new Intent(FriendActivity.this, PendingFriends.class);
                 startActivity(intent);
             }
-        });
+            }
 
-        search.setOnClickListener(new View.OnClickListener() {
+            );
 
-            @Override
-            public void onClick(View v) {
+            search.setOnClickListener(new View.OnClickListener()
+
+            {
+
+                @Override
+                public void onClick (View v){
                 final String code = inviteCode.getText().toString();
 
                 final ParseQuery query = ParseUser.getQuery();
@@ -126,12 +231,16 @@ public class FriendActivity extends Activity{
                 });
 
             }
-        });
+            }
 
-        Add.setOnClickListener(new View.OnClickListener() {
+            );
 
-            @Override
-            public void onClick(View v) {
+            Add.setOnClickListener(new View.OnClickListener()
+
+            {
+
+                @Override
+                public void onClick (View v){
                 final ParseUser currentUser = ParseUser.getCurrentUser();
                 if (currentUser != null) {
                     {
@@ -142,8 +251,9 @@ public class FriendActivity extends Activity{
 
                             @Override
                             public void done(ParseObject object1, ParseException e) {
-                                if(object1 != null){
-                                    Toast.makeText(getApplicationContext(), "You already have a request pending for this person!",
+                                if (object1 != null) {
+                                    Toast.makeText(getApplicationContext(),
+                                            "This user already sent you a request, check your pending requests",
                                             Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -155,16 +265,16 @@ public class FriendActivity extends Activity{
 
                             @Override
                             public void done(ParseObject object1, ParseException e) {
-                                if(object1 != null){
-                                    Toast.makeText(getApplicationContext(), "You already sent a request to this person!",
+                                if (object1 != null) {
+                                    Toast.makeText(getApplicationContext(), "Please don't send multiple requests to the same person",
                                             Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
 
-                        final ParseObject friend = new ParseObject("Friends");
+                        final Friend friend = new Friend();
                         friend.put("username", username);
-                        if(name != null) friend.put("name", name);
+                        if (name != null) friend.put("name", name);
                         friend.put("nickname", nicknameEdit.getText().toString());
                         friend.put("message", Message.getText().toString());
                         friend.put("all", allBox.isChecked());
@@ -207,11 +317,13 @@ public class FriendActivity extends Activity{
                 }
 
             }
-        });
+            }
 
-    }
+            );
 
-    @Override
+        }
+
+        @Override
     public void onStop() {
         super.onStop();
 

@@ -40,7 +40,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         final ParseUser currentUser = ParseUser.getCurrentUser();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("FriendRequests");
         query.whereEqualTo("fromUser", currentUser.getObjectId());
-        query.orderByDescending("createDate");
+        query.orderByAscending("createDate");
         query.findInBackground(new FindCallback<ParseObject>() {//if user sent a request, and that
             //request is now accepted, update that friend and remove the FriendRequest.  Also,
             //delete newer copies of requests if multiple exist.  Also, update status of all friends
@@ -50,31 +50,6 @@ public class MenuActivity extends Activity implements View.OnClickListener {
             public void done(List<ParseObject> objects, ParseException e) {
                 if(objects.size() > 0){
                     objectSize = objects.size();
-                    for (int p = 0; p < objectSize; p++) { //removes all old multiple copies
-                        String findName = objects.get(p).getString("toUser");
-                        if(findName.equals(currentUser.getObjectId())){
-                            try {
-                                objectSize--;
-                                objects.get(p).delete();
-                            } catch (ParseException e1) {
-                                Toast.makeText(getApplicationContext(), "unable to delete self sent request",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        for(int q = p+1; q < objectSize; q++){
-                            if(objects.get(q).getString("toUser").equals(findName)){
-                                try {
-                                    objectSize--;
-                                    q--;
-                                    objects.get(q).delete();
-                                } catch (ParseException e1) {
-                                    Toast.makeText(getApplicationContext(), "unable to delete",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }
-                    }
-
                     for (int i = 0; i < objectSize; i++) {
                         final ParseObject r = objects.get(i);
                         if(r.getString("status").equals("accepted")){
@@ -117,6 +92,26 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                                         if(thisFriend.equals(friendId)){
                                             if(!friends.get(j).getString("status").equals("theyIgnoredYou")) {
                                                 friends.get(j).put("status", "theyIgnoredYou");
+                                                friends.get(j).saveInBackground();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        else if(r.getString("status").equals("removed")){
+                            ParseRelation relation = currentUser.getRelation("Friends");
+                            ParseQuery query = relation.getQuery();
+                            query.findInBackground(new FindCallback<ParseObject>() {
+
+                                @Override
+                                public void done(List<ParseObject> friends, ParseException e) {
+                                    String friendId = r.getString("toUser");
+                                    for (int j = 0; j < friends.size(); j++) {
+                                        String thisFriend = friends.get(j).getString("friend_id");
+                                        if(thisFriend.equals(friendId)){
+                                            if(!friends.get(j).getString("status").equals("theyRemovedYou")) {
+                                                friends.get(j).put("status", "theyRemovedYou");
                                                 friends.get(j).saveInBackground();
                                             }
                                         }
