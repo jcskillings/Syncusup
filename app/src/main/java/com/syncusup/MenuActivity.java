@@ -27,7 +27,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     } public void onClick(View v){
         switch (v.getId()){
             case R.id.todo_button:
-                Intent Todo = new Intent(this, TodoListActivity.class);
+                Intent Todo = new Intent(this, ShowListsActivity.class);
                 startActivity(Todo);
                 break;
             case R.id.friends_button:

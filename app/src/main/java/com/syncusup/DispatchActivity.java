@@ -31,7 +31,7 @@ public class DispatchActivity extends Activity {
             startActivity(new Intent(this, WelcomeActivity.class));
         } else {
             // Start an intent for the logged in activity
-            startActivity(new Intent(this, ShowListsActivity.class));
+            startActivity(new Intent(this, MenuActivity.class));
         }
     } else {
       // Start and intent for the logged out activity

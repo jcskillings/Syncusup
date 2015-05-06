@@ -10,6 +10,7 @@ import com.parse.ParseObject;
 public class ParseApplication extends Application {
   public static final String TODO_GROUP_NAME = "ALL_TODOS";
   public static final String SYNC_LIST_GROUP_NAME = "ALL_SYNC_LISTS";
+  public static final String NOTIF_GROUP_NAME = "ALL_NOTIFS";
   @Override
   public void onCreate() {
     super.onCreate();

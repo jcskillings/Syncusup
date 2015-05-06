@@ -61,4 +61,6 @@
     <string name="title_activity_notifications">Notifications</string>
     <string name="notifs_title">Notifications</string>
     <string name="title_activity_view_notification">ViewNotification</string>
+    <string name="no_notifs">No Notifications</string>
+    <string name="title_activity_menu">MenuActivity</string>
 </resources>
