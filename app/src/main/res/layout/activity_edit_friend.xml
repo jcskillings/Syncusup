@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditFriendActivity">
+
+    <TextView
+        android:layout_width="249dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/ResultTextView"
+        android:layout_weight="0.05" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/ResultTextView2"
+        android:layout_weight="0.05" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ResultFrameLayout"
+        android:layout_weight="0.29">
+
+        <CheckBox
+            android:layout_width="100dp"
+            android:layout_height="46dp"
+            android:text="all"
+            android:id="@+id/all"
+            android:layout_gravity="left|center_vertical" />
+
+        <CheckBox
+            android:layout_width="97dp"
+            android:layout_height="55dp"
+            android:text="friend"
+            android:id="@+id/friend"
+            android:layout_gravity="center" />
+
+        <CheckBox
+            android:layout_width="108dp"
+            android:layout_height="50dp"
+            android:text="family"
+            android:id="@+id/family"
+            android:layout_gravity="right|center_vertical" />
+
+        <CheckBox
+            android:layout_width="104dp"
+            android:layout_height="60dp"
+            android:text="work"
+            android:id="@+id/work"
+            android:layout_gravity="left|bottom" />
+
+        <CheckBox
+            android:layout_width="103dp"
+            android:layout_height="60dp"
+            android:text="school"
+            android:id="@+id/school"
+            android:layout_gravity="center_horizontal|bottom" />
+
+        <CheckBox
+            android:layout_width="126dp"
+            android:layout_height="55dp"
+            android:text="personal"
+            android:id="@+id/personal"
+            android:layout_gravity="right|bottom" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:id="@+id/ResultTextView3"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_gravity="left|top" />
+
+    </FrameLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="Enter nickname:"
+        android:ems="10"
+        android:id="@+id/nickname"
+        android:layout_weight="0.08" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:hint="Edit message to friend here"
+        android:id="@+id/message"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.14" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.04"
+        android:weightSum="1"
+        android:id="@+id/buttonBox">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Cancel"
+            android:id="@+id/Cancel"
+            android:layout_weight="0.49" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Save"
+            android:id="@+id/Save"
+            android:layout_weight="0.49" />
+    </LinearLayout>
+
+</LinearLayout>

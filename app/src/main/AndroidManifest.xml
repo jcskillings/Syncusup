@@ -79,7 +79,19 @@
             android:label="@string/title_activity_edit_permissions" >
         </activity>
         <activity
+            android:name=".PendingFriends"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".FriendActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".IgnoreActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EditFriendActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity

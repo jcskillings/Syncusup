@@ -99,16 +99,21 @@ public class PendingFriends extends ListActivity{
                         ResultFrame2.setVisibility(View.VISIBLE);
                         ResultFrame3.setVisibility(View.VISIBLE);
                         topRequest = objects.get(0);
-                        listAdapter.insert("This person says to you:\n'"+topRequest.getString("message")+"'", 0);
+                        String message;
+                        if(topRequest.getString("message")==null || topRequest.getString("message")=="")
+                            message = "No message";
+                        else message = topRequest.getString("message");
+                        listAdapter.insert("This person says to you:\n'"+message+"'", 0);
                         ParseQuery query = ParseUser.getQuery();
-                        query.whereEqualTo("objectId", objects.get(0).getString("fromUser"));//find that friend
+                        query.whereEqualTo("objectId", topRequest.getString("fromUser"));//find that friend
                         query.getFirstInBackground(new GetCallback<ParseUser>() {
 
                             @Override
                             public void done(ParseUser friends, ParseException e) {
                                 try {
                                     username = friends.getString("username");
-                                    name = friends.getString("name");
+                                    if(friends.getString("name") == null) name = "None given";
+                                    else name = friends.getString("name");
                                     friendId = friends.getObjectId();
                                     final TextView UsernameText = (TextView) findViewById(R.id.username);
                                     final TextView NameText = (TextView) findViewById(R.id.name);
@@ -136,8 +141,10 @@ public class PendingFriends extends ListActivity{
                                     public void done(ParseUser friends2, ParseException e) {
                                         try {
                                             String username = friends2.getString("username");
-                                            String name = friends2.getString("name");
-                                            String total = "username:" + username + ", name:" + name;
+                                            String name;
+                                            if(friends2.getString("name") == null) name = "No name given";
+                                            else name = friends2.getString("name");
+                                            String total = "Username:" + username + "\nName:" + name;
                                             listAdapter.add(total);
 
                                         } catch (Exception e3) {
@@ -150,10 +157,10 @@ public class PendingFriends extends ListActivity{
                             }
                         }
                         else{
-                            listAdapter.add("No other requests sent to accept/deny");
+                            listAdapter.insert("No other requests sent to accept/ignore", 1);
                         }
                     } else {
-                        listAdapter.add("No pending requests to accept/deny");
+                        listAdapter.add("No pending requests to accept/ignore");
                         Toast.makeText(getApplicationContext(), "No requests found1",
                                 Toast.LENGTH_LONG).show();
                     }
@@ -180,8 +187,10 @@ public class PendingFriends extends ListActivity{
                                 public void done(ParseUser friends3, ParseException e) {
                                     try {
                                         String username = friends3.getString("username");
-                                        String name = friends3.getString("name");
-                                        String total = "user:" + username + "\nname:" + name;
+                                        String name;
+                                        if(friends3.getString("name") == null) name = "No name given";
+                                        else name = friends3.getString("name");
+                                        String total = "Username:" + username + "\nName:" + name;
                                         listAdapter.add(total);
 
                                     } catch (Exception e3) {
@@ -241,11 +250,12 @@ public class PendingFriends extends ListActivity{
                 }
 
             });
+
             Deny.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v){
-                    topRequest.put("status", "declined");
+                    topRequest.put("status", "ignored");
                     topRequest.saveInBackground();
                 }
 

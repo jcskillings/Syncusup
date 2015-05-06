@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FriendActivity"
+    tools:context=".PendingFriends"
     android:weightSum="1"
     android:id="@+id/activity_pending">
 
@@ -52,7 +52,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Decline"
+            android:text="Ignore"
             android:id="@+id/decline"
             android:layout_weight="0.38" />
     </LinearLayout>
@@ -135,23 +135,12 @@
         android:layout_width="wrap_content"
         android:layout_height="87dp"
         android:id="@android:id/list"
-        android:layout_weight="0.22" />
-
-    <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:id="@+id/simple_list_item_1" />
+        android:layout_weight="0.95" />
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="13dp"
-        android:id="@android:id/list"
-        android:layout_weight="0.47" />
-
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="19dp"
-        android:id="@+id/simple_list_item_2" />
+        android:layout_height="0dp"
+        android:id="@+id/simple_list_item_1" />
 
 
 </LinearLayout>

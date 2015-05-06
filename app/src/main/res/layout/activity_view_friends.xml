@@ -7,6 +7,62 @@
     tools:context=".ViewFriends"
     android:weightSum="1">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_gravity="center_horizontal"
+        android:weightSum="1">
+
+        <EditText
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:inputType="textPersonName"
+            android:hint="Friend#"
+            android:layout_marginLeft="32dp"
+            android:ems="10"
+            android:id="@+id/inviteCode" />
+
+        <Button
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
+            android:text="Edit"
+            android:layout_marginLeft="32dp"
+            android:id="@+id/edit" />
+
+        <Button
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
+            android:text="Remove"
+            android:layout_marginLeft="1dp"
+            android:id="@+id/remove" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:layout_gravity="center_horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/textView"
+            android:gravity="bottom"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="0.89" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="View Ignored"
+            android:id="@+id/ignored"
+            android:layout_alignParentRight="true"
+            android:layout_weight="0.09" />
+    </LinearLayout>
+
     <ListView
         android:id="@+id/simple_list_item_1"
         android:layout_width="fill_parent"

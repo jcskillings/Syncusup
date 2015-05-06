@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".IgnoreFriends"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_gravity="center_horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/textView"
+            android:gravity="bottom"
+            android:layout_weight="0.75" />
+
+        <EditText
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:inputType="textPersonName"
+            android:hint="Friend#"
+            android:ems="10"
+            android:id="@+id/number" />
+
+        <Button
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
+            android:text="Un-ignore"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/unignore" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/simple_list_item_1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:dividerHeight="1dp" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
+</LinearLayout>
