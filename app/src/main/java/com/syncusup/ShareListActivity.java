@@ -2,6 +2,7 @@ package com.syncusup;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -68,6 +69,7 @@ public class ShareListActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Friend friend = friendsAdapter.getItem(position);
+                openEditPermissions(friend);
             }
         });
 
@@ -165,7 +167,14 @@ public class ShareListActivity extends Activity {
         TextView friendName;
         TextView permissionType;
     }
-
+    private void openEditPermissions(Friend friend){
+        Bundle extras = new Bundle();
+        extras.putString("friendId", friend.getFriendId());
+        extras.putString("listId", listId);
+        Intent i = new Intent(this, EditPermissionsActivity.class);
+        i.putExtras(extras);
+        startActivity(i);
+    }
 
 
 

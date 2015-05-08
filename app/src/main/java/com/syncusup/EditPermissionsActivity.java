@@ -2,6 +2,7 @@ package com.syncusup;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,16 +11,37 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+
 
 public class EditPermissionsActivity extends Activity {
     private TextView friendName;
     private Spinner spinner;
+    private Friend friend;
+    private String listId;
+    private String friendId;
+    private List_permissions listPermit;
+    private String[] permTypes;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_permissions);
-
-        Spinner spinner = (Spinner) findViewById(R.id.permission_spinner);
+        if (getIntent().hasExtra("friendId")){
+            friendId = getIntent().getStringExtra("friendId");
+        } else {
+            Log.i("editpermissAct", "no friend id passed in extras");
+        }
+        if (getIntent().hasExtra("listId")){
+            listId = getIntent().getStringExtra("listId");
+        } else {
+            Log.i("editpermissAct", "no list id passed in extras");
+        }
+        spinner = (Spinner) findViewById(R.id.permission_spinner);
+        friendName = (TextView) findViewById(R.id.friend_name_txt);
+        permTypes = getResources().getStringArray(R.array.permissions_array);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
                 R.array.permissions_array, android.R.layout.simple_spinner_item);
@@ -38,8 +60,27 @@ public class EditPermissionsActivity extends Activity {
                 // Another interface callback
             }
         });
+        // get the friend object
+        final ParseQuery<Friend> friendQuery = Friend.getQuery();
+        friendQuery.whereEqualTo("friendId", friendId);
+        friendQuery.getFirstInBackground(new GetCallback<Friend>() {
 
-    }
+            @Override
+            public void done( Friend object, ParseException e) {
+                if (!isFinishing()) {
+                    return;
+                }
+                if (e == null){
+                    friend = object;
+                    friendName.setText(friend.getName());
+                    getPermissions();
+                } else {
+                    Log.i("ShareListAct", e.getMessage());
+                }
+            }
+
+        });
+    } // end oncreate
 
 
     @Override
@@ -63,4 +104,46 @@ public class EditPermissionsActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+    public void getPermissions(){
+        //ParseRelation<List_permissions> listRel = friend.getRelation("friendPermissions");
+        ParseQuery<List_permissions> listQuery = List_permissions.getQuery();
+        listQuery.whereEqualTo("friendId", friendId);
+        listQuery.whereEqualTo("listId", listId);
+        listQuery.getFirstInBackground(new GetCallback<List_permissions>() {
+
+            @Override
+            public void done(List_permissions object, ParseException e) {
+                if (!isFinishing()) {
+                    return;
+                }
+                if (e == null) {
+                    listPermit = object;
+                    int p = permissionInt(listPermit.getPermissionType());
+                    spinner.setSelection(p);
+                } else {
+                    Log.i("ShareListAct", e.getMessage());
+                }
+            }
+
+        });
+    }
+    public int permissionInt(String permType){
+        int ret = -1;
+        switch (permType){
+            case "none":
+                ret = 0;
+                break;
+            case "master":
+                ret= 1;
+                break;
+            case "editor":
+                ret= 2;
+                break;
+            case "watcher":
+                ret= 3;
+                break;
+        }
+        return ret;
+    }
+
 }
