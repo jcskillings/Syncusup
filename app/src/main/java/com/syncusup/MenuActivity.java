@@ -3,6 +3,7 @@ package com.syncusup;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -154,9 +156,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     public void onClick(View v){
         switch (v.getId()){
             case R.id.todo_button:
-                //TODO change to launch private todos
-                Intent Todo = new Intent(this, ShowListsActivity.class);
-                startActivity(Todo);
+                getPrivateTodos();
                 break;
             case R.id.friends_button:
                 Intent friend = new Intent(this, FriendActivity.class);
@@ -195,4 +195,29 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         }
         return super.onOptionsItemSelected(item);
     }
+    public void getPrivateTodos(){
+        //TODO change to launch private todos
+        ParseQuery<SyncList> privListQuery= SyncList.getQuery();
+        privListQuery.whereEqualTo("privateTodos", true);
+        privListQuery.whereEqualTo("creator", ParseUser.getCurrentUser());
+        privListQuery.getFirstInBackground(new GetCallback<SyncList>() {
+            @Override
+            public void done(SyncList syncList, ParseException e) {
+                if (e == null) {
+                    if (!isFinishing()) {
+                        Intent myTodos = new Intent(MenuActivity.this, TodoListActivity.class);
+                        myTodos.putExtra("parentListId", syncList.getObjectId());
+                        startActivity(myTodos);
+                    }
+                } else {
+                    Log.i("TodoListActivity",
+                            "getPrivateTodos: Error finding private todo list: "
+                                    + e.getMessage());
+                }
+            }
+        });
+
+
+    }
+
 }

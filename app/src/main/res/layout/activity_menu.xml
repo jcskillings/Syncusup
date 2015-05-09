@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/home"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/background"
-    android:gravity="center"
+        android:gravity="center"
     android:padding="30dip"
+
     android:weightSum="1">
 
     <ImageView
@@ -71,5 +76,5 @@
         android:text="Large Text"
         android:id="@+id/my_invite_code"
         android:layout_gravity="center_horizontal" />
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -57,6 +57,7 @@ public class TodoListActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Todos");
         setContentView(R.layout.activity_todo_list);
         currentUser = ParseUser.getCurrentUser();
         // Fetch the todoId from the Extra data - need this to know what list todos to load
@@ -81,6 +82,7 @@ public class TodoListActivity extends Activity {
                 public void done( SyncList object, ParseException e) {
                     if (!isFinishing()) {
                         synclist = object;
+
                         Log.i("TodoListActivity", "synclistname: "+synclist.getName());
                         setListProperties();
                         //todoText.setText(todo.getTitle());

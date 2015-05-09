@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 /**
@@ -112,11 +113,34 @@ public class SignUpActivity extends Activity {
           Toast.makeText(SignUpActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
         } else {
           // Start an intent for the dispatch activity
+          createMyTodos();
           Intent intent = new Intent(SignUpActivity.this, DispatchActivity.class);
           intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
           startActivity(intent);
+
         }
       }
     });
-  }
+  } // end signup
+    public void createMyTodos(){
+        SyncList myTodos = new SyncList();
+        myTodos.setName(ParseUser.getCurrentUser().getUsername()+"'s Todos");
+        myTodos.setCreator(ParseUser.getCurrentUser());
+        myTodos.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    // Show the error message
+                    Toast.makeText(SignUpActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    // Start an intent for the dispatch activity
+
+                    Intent intent = new Intent(SignUpActivity.this, DispatchActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+
+                }
+            }
+        });
+    }
 }

@@ -3,6 +3,7 @@ package com.syncusup;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -185,7 +186,10 @@ public class EditPermissionsActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }
-
+        if (item.getItemId() == R.id.goto_main_menu){
+            Intent i = new Intent(this, MenuActivity.class);
+            startActivity(i);
+        }
         return super.onOptionsItemSelected(item);
     }
     public void getPermissions(){

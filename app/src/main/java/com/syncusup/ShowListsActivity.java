@@ -69,6 +69,7 @@ public class ShowListsActivity extends Activity {
         ParseQueryAdapter.QueryFactory<SyncList> factory = new ParseQueryAdapter.QueryFactory<SyncList>() {
             public ParseQuery<SyncList> create() {
                 ParseQuery<SyncList> query = SyncList.getQuery();
+                query.whereEqualTo("privateTodos", false);
                 query.orderByDescending("createdAt");
                 //query.fromLocalDatastore();
                 return query;

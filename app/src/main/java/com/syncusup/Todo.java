@@ -30,6 +30,9 @@ public class Todo extends ParseObject {
     public ParseUser getWhoCompleted() {
         return getParseUser("whoCompleted");
     }
+    public void setWhoCompleted(ParseUser user){
+        put("whoCompleted", user);
+    }
 
     public void setWhoCreated(ParseUser currentUser) {
         put("whoCreated", currentUser);

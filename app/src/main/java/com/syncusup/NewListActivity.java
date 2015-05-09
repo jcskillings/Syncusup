@@ -8,6 +8,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -125,6 +127,11 @@ public class NewListActivity extends Activity {
                 public void done(SyncList object, ParseException e) {
                     if (!isFinishing()) {
                         synclist = object;
+                        if (synclist.isPrivate()){
+                            //don't let user change name of private todos
+                            listName.setFocusable(false);
+                            listName.setFocusableInTouchMode(false);
+                        }
                         Log.i("newlistact", "synlistnamt: "+synclist.getName());
                         Log.i("newlistAct", "creator name: "+synclist.getCreator().getUsername());
                         listName.setText(synclist.getName());
@@ -419,7 +426,7 @@ public class NewListActivity extends Activity {
         // Check if we have a real user
 
     }
-   /* @Override
+   @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_new_list, menu);
@@ -437,7 +444,10 @@ public class NewListActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }
-
+        if (item.getItemId() == R.id.goto_main_menu){
+            Intent i = new Intent(this, MenuActivity.class);
+            startActivity(i);
+        }
         return super.onOptionsItemSelected(item);
-    } */
+    }
 }

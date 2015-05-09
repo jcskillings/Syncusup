@@ -39,6 +39,9 @@ public class SyncList extends ParseObject {
     public String getUuidString() {
         return getString("uuid");
     }
+    public Boolean isPrivate(){
+        return getBoolean("privateTodos");
+    }
     public void setUuidString() {
         UUID uuid = UUID.randomUUID();
         put("uuid", uuid.toString());
