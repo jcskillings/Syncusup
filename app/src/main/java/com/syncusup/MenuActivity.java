@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -20,10 +21,11 @@ import java.util.List;
 
 public class MenuActivity extends Activity implements View.OnClickListener {
     int objectSize;
-
+    private TextView inviteCode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Menu");
         setContentView(R.layout.activity_menu);
         View todoButton = findViewById(R.id.todo_button);
         todoButton.setOnClickListener(this);
@@ -35,9 +37,11 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         sharedlistsButton.setOnClickListener(this);
         View myfriendsButton = findViewById(R.id.friends_button);
         myfriendsButton.setOnClickListener(this);
+        inviteCode = (TextView) findViewById(R.id.my_invite_code);
 
         /* Updates/Removes friend status from FriendRequests with currentUser    */
         final ParseUser currentUser = ParseUser.getCurrentUser();
+        inviteCode.setText("Your Invite Code: "+currentUser.getObjectId());
         ParseQuery<ParseObject> query = ParseQuery.getQuery("FriendRequests");
         query.whereEqualTo("fromUser", currentUser.getObjectId());
         query.orderByAscending("createDate");
@@ -150,6 +154,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     public void onClick(View v){
         switch (v.getId()){
             case R.id.todo_button:
+                //TODO change to launch private todos
                 Intent Todo = new Intent(this, ShowListsActivity.class);
                 startActivity(Todo);
                 break;
@@ -164,8 +169,30 @@ public class MenuActivity extends Activity implements View.OnClickListener {
             case R.id.calendar_button:
                 Intent Calendar = new Intent(this, MyCalendarActivity.class);
                 startActivity(Calendar);
+                break;
+            case R.id.shared_button:
+                Intent showLists = new Intent(this, ShowListsActivity.class);
+                startActivity(showLists);
+                break;
+
             //Add other buttons here
         }
     }
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_logout) {
+            // Log out the current user
+            ParseUser.logOut();
+            // Create a new anonymous user
+            //ParseAnonymousUtils.logIn(null);
+            startActivity(new Intent(this, WelcomeActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

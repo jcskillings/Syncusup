@@ -15,6 +15,7 @@ public class WelcomeActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setTitle("Welcome to Synqusup");
     setContentView(R.layout.activity_welcome);
 
     // Log in button click handler

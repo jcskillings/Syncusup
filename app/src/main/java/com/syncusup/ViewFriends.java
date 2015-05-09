@@ -44,6 +44,7 @@ public class ViewFriends extends ListActivity{
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+        setTitle("Friends");
         setContentView(R.layout.activity_view_friends);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         final ParseUser currentUser = ParseUser.getCurrentUser();

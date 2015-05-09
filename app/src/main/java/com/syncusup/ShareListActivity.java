@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -34,11 +35,14 @@ public class ShareListActivity extends Activity {
     private ListView friendsListView;
     private String listId;
     private List_permissions listPermit;
+    private TextView listName;
+    private SyncList list;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Share List");
         setContentView(R.layout.activity_share_list);
         ParseUser currentUser = ParseUser.getCurrentUser();
         listId = getIntent().getStringExtra("listId");
@@ -64,12 +68,30 @@ public class ShareListActivity extends Activity {
         // Attach the query adapter to the view
         ListView friendsListView = (ListView) findViewById(R.id.friend_list_view);
         friendsListView.setAdapter(friendsAdapter);
+        listName = (TextView) findViewById(R.id.list_info);
 
         friendsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Friend friend = friendsAdapter.getItem(position);
                 openEditPermissions(friend);
+            }
+        });
+        ParseQuery<SyncList> listQuery = SyncList.getQuery();
+        listQuery.whereEqualTo("objectId", listId);
+        listQuery.getFirstInBackground(new GetCallback<SyncList>() {
+            @Override
+            public void done(SyncList syncList, ParseException e) {
+                if (e == null) {
+                    if (!isFinishing()) {
+                        list = syncList;
+                        listName.setText(list.getName());
+                    }
+                } else {
+                    Log.i("TodoListActivity",
+                            "setListProperties: Error finding list: "
+                                    + e.getMessage());
+                }
             }
         });
 
@@ -116,6 +138,7 @@ public class ShareListActivity extends Activity {
                 holder = new ViewHolder();
                 holder.friendName = (TextView) view.findViewById(R.id.friend_name);
                 holder.permissionType = (TextView) view.findViewById(R.id.friend_permission_type);
+                holder.checkmark = (ImageView) view.findViewById(R.id.img_has_permission);
                 //holder.editButton = (Button) view.findViewById(R.id.todo_edit_button);
                 view.setTag(holder);
 
@@ -124,6 +147,7 @@ public class ShareListActivity extends Activity {
             }
             final TextView friendName = holder.friendName;
             final TextView permissionType = holder.permissionType;
+            final ImageView checkmark = holder.checkmark;
             //ParseObject parentlist = new ParseObject("list");
             //parentlist = to-do.getParentList();
             //String parentName = parentlist.getName();
@@ -140,9 +164,11 @@ public class ShareListActivity extends Activity {
                         if (listPermit == null){
                             Log.i("sharelistact", "no permission found (null)");
                             permissionType.setText("none");
+                            checkmark.setVisibility(View.INVISIBLE);
                         } else {
                             //listPermit = (List_permissions) permitList;
                             //listPermit = permitList.get(0);
+                            checkmark.setVisibility(View.VISIBLE);
                             Log.i("sharelistact", "list permit info: "+listPermit.getUserName()+" , "+listPermit.getPermissionType());
                             permissionType.setText(listPermit.getPermissionType());
 
@@ -166,6 +192,7 @@ public class ShareListActivity extends Activity {
     private static class ViewHolder {
         TextView friendName;
         TextView permissionType;
+        ImageView checkmark;
     }
     private void openEditPermissions(Friend friend){
         Bundle extras = new Bundle();

@@ -8,7 +8,9 @@
         android:layout_toLeftOf="@+id/friend_name"
         android:src="@drawable/checkmark_32"
         android:layout_margin="20dp"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:id="@+id/img_has_permission"
+        android:focusableInTouchMode="false" />
     <TextView
         android:id="@+id/friend_name"
         android:layout_width="wrap_content"

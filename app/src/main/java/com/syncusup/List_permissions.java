@@ -29,11 +29,11 @@ public class List_permissions extends ParseObject{
         put("share_status", shareStatus);
     }
 
-    public ParseUser getUserId(){
-        return getParseUser("user_id");
+    public String getUserId(){
+        return getString("user_id");
     }
-    public void setUserId(ParseUser currentUser){
-        put("user_id", currentUser);
+    public void setUserId(String userId){
+        put("user_id", userId);
     }
     public String getUserName(){
         return getString("username");

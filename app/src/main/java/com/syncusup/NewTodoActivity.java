@@ -33,13 +33,15 @@ public class NewTodoActivity extends Activity {
     private String parentListId = null;
     private TextView whoCompleted;
     private TextView dateCompleted;
-
+    private ParseUser currentUser;
+    private List_permissions userLp;
     //private SyncList parentList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_todo);
+        currentUser = ParseUser.getCurrentUser();
         //Intent intent = getIntent();
         Bundle extras = getIntent().getExtras();
         // Fetch the todoId from the Extra data
@@ -196,6 +198,58 @@ public class NewTodoActivity extends Activity {
 
 
     }
+    private void setListProperties(){
+        if (currentUser == parentList.getCreator()){
+            // current user is creator don't query for permissions
+
+            deleteButton.setVisibility(View.VISIBLE);
+
+        } else {
+            ParseQuery<List_permissions> userPermisQuery = List_permissions.getQuery();
+            userPermisQuery.whereEqualTo("list_id", parentListId);
+            userPermisQuery.whereEqualTo("user_id", currentUser.getObjectId());
+            todoText.setFocusable(true);
+            todoText.setFocusableInTouchMode(true);
+
+            userPermisQuery.getFirstInBackground(new GetCallback<List_permissions>() {
+                @Override
+                public void done(List_permissions permissions, ParseException e) {
+                    if (e == null) {
+                        if (!isFinishing()) {
+                            userLp = permissions;
+
+                            if (userLp.getPermissionType().contentEquals("watcher")){
+                                saveButton.setVisibility(View.INVISIBLE);
+                                editButton.setVisibility(View.INVISIBLE);
+                                completeButton.setVisibility(View.INVISIBLE);
+                                todoText.setFocusable(false);
+                                todoText.setFocusableInTouchMode(false);
+
+                            }
+                            if (userLp.getPermissionType().contentEquals("master")){
+                                deleteButton.setVisibility(View.VISIBLE);
+                                editButton.setVisibility(View.VISIBLE);
+                                saveButton.setVisibility(View.VISIBLE);
+                                todoText.setFocusable(true);
+                                todoText.setFocusableInTouchMode(true);
+                            }
+                            if (userLp.getPermissionType().contentEquals("editor")){
+                                deleteButton.setVisibility(View.INVISIBLE);
+                                todoText.setFocusable(true);
+                                todoText.setFocusableInTouchMode(true);
+
+                            }
+
+                        }
+                    } else {
+                        Log.i("TodoListActivity",
+                                "setListProperties: Error finding  user permission: "
+                                        + e.getMessage());
+                    }
+                }
+            });
+        }
+    } // end setListProperties
 }
 
 

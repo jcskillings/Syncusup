@@ -23,7 +23,7 @@ public class DispatchActivity extends Activity {
     // Check if there is current user info
     if (ParseUser.getCurrentUser() != null ) {
         Context context = getApplicationContext();
-        CharSequence text = ParseUser.getCurrentUser().getString("username");
+        CharSequence text = "Logged in as: "+ParseUser.getCurrentUser().getString("username");
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();

@@ -57,7 +57,7 @@ public class ShowListsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_lists);
-
+        setTitle("Shared Lists");
         // Set up the views
         showListsView = (ListView) findViewById(R.id.show_list_view);
         noListsView = (LinearLayout) findViewById(R.id.no_lists_view);
@@ -70,7 +70,7 @@ public class ShowListsActivity extends Activity {
             public ParseQuery<SyncList> create() {
                 ParseQuery<SyncList> query = SyncList.getQuery();
                 query.orderByDescending("createdAt");
-                query.fromLocalDatastore();
+                //query.fromLocalDatastore();
                 return query;
             }
         };
@@ -101,6 +101,8 @@ public class ShowListsActivity extends Activity {
     }
     protected void onResume() {
         super.onResume();
+        syncListAdapter.notifyDataSetChanged();
+        editMode = false;
         // Check if we have a real user
         if (!ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
             // Sync data to Parse
@@ -177,6 +179,10 @@ public class ShowListsActivity extends Activity {
                         EDIT_ACTIVITY_CODE);
             }
         }
+        if (item.getItemId() == R.id.goto_main_menu){
+            Intent i = new Intent(this, MenuActivity.class);
+            startActivity(i);
+        }
 
         if (item.getItemId() == R.id.action_sync) {
             //syncListsToParse();
@@ -185,13 +191,17 @@ public class ShowListsActivity extends Activity {
         if (item.getItemId() == R.id.action_edit){
             Log.i("showlistsact", "coming in editmode="+editMode);
             if (!editMode) {
-                TextView editHide = (TextView) findViewById(R.id.edit_hide);
-                editHide.setVisibility(View.VISIBLE);
-                editMode = true;
+
+                   //TextView editHide = (TextView) findViewById(R.id.edit_hide);
+                    //editHide.setVisibility(View.VISIBLE);
+                    editMode = true;
+                syncListAdapter.notifyDataSetChanged();
+
             } else {
-                TextView editHide = (TextView) findViewById(R.id.edit_hide);
-                editHide.setVisibility(View.INVISIBLE);
+                //TextView editHide = (TextView) findViewById(R.id.edit_hide);
+                //editHide.setVisibility(View.INVISIBLE);
                 editMode = false;
+                syncListAdapter.notifyDataSetChanged();
             }
         }
         /*if (item.getItemId() == R.id.action_logout) {
@@ -338,16 +348,23 @@ public class ShowListsActivity extends Activity {
                 holder = new ViewHolder();
                 holder.listName = (TextView) view
                         .findViewById(R.id.list_name);
+                holder.editHide = (TextView) view.findViewById(R.id.edit_hide);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
             }
             TextView listNameView = holder.listName;
+            TextView editHide = holder.editHide;
             listNameView.setText(synclist.getName());
             if (synclist.isDraft()) {
                 listNameView.setTypeface(null, Typeface.BOLD_ITALIC);
             } else {
                 listNameView.setTypeface(null, Typeface.BOLD);
+            }
+            if (editMode){
+                editHide.setVisibility(View.VISIBLE);
+            } else {
+                editHide.setVisibility(View.INVISIBLE);
             }
             return view;
         }
@@ -355,5 +372,6 @@ public class ShowListsActivity extends Activity {
 
     private static class ViewHolder {
         TextView listName;
+        TextView editHide;
     }
 }

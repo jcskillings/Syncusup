@@ -49,15 +49,16 @@ public class TodoListActivity extends Activity {
     private ListView todoListView;
     private LinearLayout noTodosView;
     private LinearLayout loadingView;
-
+    private ParseUser currentUser;
     private TextView loggedInInfoView;
     private String syncListId = null; // id of parentList
     private SyncList synclist;
+    private List_permissions userLp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
-
+        currentUser = ParseUser.getCurrentUser();
         // Fetch the todoId from the Extra data - need this to know what list todos to load
         if (getIntent().hasExtra("parentListId")) {
             syncListId = getIntent().getStringExtra("parentListId");
@@ -81,6 +82,7 @@ public class TodoListActivity extends Activity {
                     if (!isFinishing()) {
                         synclist = object;
                         Log.i("TodoListActivity", "synclistname: "+synclist.getName());
+                        setListProperties();
                         //todoText.setText(todo.getTitle());
                         //deleteButton.setVisibility(View.VISIBLE);
                     }
@@ -163,6 +165,7 @@ public class TodoListActivity extends Activity {
 
 
                 //openEditView(todo);
+
             }
         });
 
@@ -188,6 +191,7 @@ public class TodoListActivity extends Activity {
                         synclist = object;
                         Log.i("TodoListActivity", "onResume:synclistname: "+synclist.getName());
                         //todoText.setText(todo.getTitle());
+                        updateLoggedInInfo();
                         //deleteButton.setVisibility(View.VISIBLE);
                         //todoListAdapter.clear();
                         //todoListAdapter.notifyDataSetChanged();
@@ -200,7 +204,7 @@ public class TodoListActivity extends Activity {
 
 
             // Update the logged in label info
-            updateLoggedInInfo();
+
         }
     }
 
@@ -209,7 +213,7 @@ public class TodoListActivity extends Activity {
             ParseUser currentUser = ParseUser.getCurrentUser();
 
             //loggedInInfoView.setText(getString(R.string.logged_in, currentUser.getString("username")));
-            loggedInInfoView.setText((getString(R.string.parent_list, syncListId)));
+            loggedInInfoView.setText((getString(R.string.parent_list, synclist.getName())));
         } else {
             loggedInInfoView.setText(getString(R.string.not_logged_in));
         }
@@ -268,14 +272,16 @@ public class TodoListActivity extends Activity {
             // Make sure there's a valid user, anonymous
             // or regular
             if (ParseUser.getCurrentUser() != null) {
-
-                Intent i = new Intent(this, NewTodoActivity.class);
-                Bundle extras = new Bundle();
-                extras.putString("ID", null);
-                Log.i("TodoListActivity", "syncListId to newTodo: "+syncListId);
-                extras.putString("parentListId", syncListId);
-                i.putExtras(extras);
-                startActivityForResult(i,EDIT_ACTIVITY_CODE);
+                // only allow adding new todo items for creator master and editor
+                if (synclist.getCreator() == currentUser || userLp.getPermissionType().contentEquals("master") || userLp.getPermissionType().contentEquals("editor")) {
+                    Intent i = new Intent(this, NewTodoActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("ID", null);
+                    Log.i("TodoListActivity", "syncListId to newTodo: " + syncListId);
+                    extras.putString("parentListId", syncListId);
+                    i.putExtras(extras);
+                    startActivityForResult(i, EDIT_ACTIVITY_CODE);
+                }
             }
         }
 
@@ -284,8 +290,12 @@ public class TodoListActivity extends Activity {
             loadFromParse();
 
         }
+        if (item.getItemId() == R.id.goto_main_menu){
+            Intent i = new Intent(this, MenuActivity.class);
+            startActivity(i);
+        }
 
-        /*if (item.getItemId() == R.id.action_logout) {
+        if (item.getItemId() == R.id.action_logout) {
             // Log out the current user
             ParseUser.logOut();
             // Create a new anonymous user
@@ -298,7 +308,7 @@ public class TodoListActivity extends Activity {
             ParseObject
                     .unpinAllInBackground(ParseApplication.TODO_GROUP_NAME);
             startActivity(new Intent(this, WelcomeActivity.class));
-        } */
+        }
 
 
         return super.onOptionsItemSelected(item);
@@ -471,6 +481,35 @@ public class TodoListActivity extends Activity {
 
 
     }
+    // used to get user permissions for the parent list
+    private void setListProperties(){
+        if (currentUser == synclist.getCreator()){
+            // current user is creator don't query for permissions
+
+
+        } else {
+            ParseQuery<List_permissions> userPermisQuery = List_permissions.getQuery();
+            userPermisQuery.whereEqualTo("list_id", syncListId);
+            userPermisQuery.whereEqualTo("user_id", currentUser.getObjectId());
+
+            userPermisQuery.getFirstInBackground(new GetCallback<List_permissions>() {
+                @Override
+                public void done(List_permissions permissions, ParseException e) {
+                    if (e == null) {
+                        if (!isFinishing()) {
+                            userLp = permissions;
+
+                        }
+                    } else {
+                        Log.i("TodoListActivity",
+                                "setListProperties: Error finding  user permission: "
+                                        + e.getMessage());
+                    }
+                }
+            });
+        }
+    } // end setListProperties
+
 }
 
 

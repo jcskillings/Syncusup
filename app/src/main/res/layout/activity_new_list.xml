@@ -13,9 +13,9 @@
         android:layout_weight="1"
         android:textSize="16sp"
         android:text="List Id"
-        android:layout_below="@+id/saveButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="59dp" />
+        android:layout_below="@+id/deleteButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,24 +34,9 @@
         android:visibility="visible">
     </EditText>
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/save"
-        android:layout_below="@+id/textView3"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
-    <Button
-        android:id="@+id/deleteButton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/delete"
-        android:visibility="invisible"
-        android:layout_below="@+id/saveButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,35 +46,82 @@
         android:layout_below="@+id/list_name"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView2" />
+        android:id="@+id/shared_with_label"
+        android:layout_marginTop="20dp" />
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="190dp"
         android:id="@+id/shared_with"
         android:layout_weight="2"
-        android:layout_below="@+id/textView2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
+        android:layout_below="@+id/shared_with_label"
+        android:layout_alignParentRight="true"
+        android:isScrollContainer="false"
+        android:layout_alignParentEnd="true" />
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Share List"
-        android:id="@+id/share_list_button"
+        android:orientation="horizontal"
         android:layout_below="@+id/shared_with"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="List Creator"
+            android:id="@+id/list_creator"
+            android:layout_below="@+id/shared_with"
+            android:layout_toLeftOf="@+id/share_list_button"
+            android:layout_toStartOf="@+id/share_list_button" />
+
+    </LinearLayout>
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="Share List"
+        android:id="@+id/share_list_button"
+        android:background="@drawable/synqus_button_selector"
+        android:layout_gravity="center"
+        android:layout_above="@+id/saveButton"
+        android:windowSoftInputMode="adjustNothing"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="@string/save"
+        android:background="@drawable/synqus_button_selector"
+        android:layout_gravity="center"
+        android:layout_above="@+id/deleteButton"
+        android:layout_alignLeft="@+id/share_list_button"
+        android:layout_alignStart="@+id/share_list_button"
+        android:windowSoftInputMode="adjustNothing"
+        android:layout_marginTop="10dp" />
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="@string/delete"
+        android:visibility="invisible"
+        android:background="@drawable/synqus_button_selector"
+        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/saveButton"
+        android:layout_alignStart="@+id/saveButton"
+        android:windowSoftInputMode="adjustNothing"
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="List Creator"
-        android:layout_marginTop="10dp"
-        android:id="@+id/textView3"
-        android:layout_below="@+id/share_list_button"
+        android:text="Your Permissions"
+        android:id="@+id/your_permissions"
+        android:layout_below="@+id/list_name"
         android:layout_alignParentLeft="true"
+        android:windowSoftInputMode="adjustNothing"
         android:layout_alignParentStart="true" />
+
 
 </RelativeLayout>

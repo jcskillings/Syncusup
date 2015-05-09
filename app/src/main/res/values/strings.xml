@@ -63,4 +63,7 @@
     <string name="title_activity_view_notification">ViewNotification</string>
     <string name="no_notifs">No Notifications</string>
     <string name="title_activity_menu">Menu</string>
+
+    <string name="list_creator">List Creator: %1$s</string>
+    <string name="your_list_permissions">Your permission: %1$s</string>
 </resources>

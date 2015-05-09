@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
@@ -42,9 +43,13 @@ public class NewListActivity extends Activity {
     private TextView listInfoView;
     private ListView permissionListView;
     private Button shareButton;
+    private Button deleteButton;
     private Friend myFriend;
     private List_permissions lp = new List_permissions();
     private Spinner spinner;
+    private TextView creator;
+    private TextView userPermis;
+    private List_permissions userLp;
 
     private LayoutInflater inflater;
     private ParseQueryAdapter<List_permissions> permissionsAdapter;
@@ -53,6 +58,7 @@ public class NewListActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Edit List");
         setContentView(R.layout.activity_new_list);
         // Fetch the todoId from the Extra data
         if (getIntent().hasExtra("parentListId")) {
@@ -66,7 +72,9 @@ public class NewListActivity extends Activity {
         shareButton = (Button) findViewById(R.id.share_list_button);
         //deleteButton = (Button) findViewById(R.id.deleteButton);
         listInfoView = (TextView) findViewById(R.id.synclist_id);
-
+        creator = (TextView) findViewById(R.id.list_creator);
+        userPermis= (TextView) findViewById(R.id.your_permissions);
+        deleteButton = (Button) findViewById(R.id.deleteButton);
 
         // Set up the Parse query to use in the adapter
         ParseQueryAdapter.QueryFactory<List_permissions> factory = new ParseQueryAdapter.QueryFactory<List_permissions>() {
@@ -88,7 +96,17 @@ public class NewListActivity extends Activity {
         permissionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                List_permissions permissions = permissionsAdapter.getItem(position);
+                // only allow editing sharing for creator and master
+                if (synclist.getCreator() == currentUser ||userLp.getPermissionType().contentEquals("master")) {
+                    List_permissions permissions = permissionsAdapter.getItem(position);
+                    Intent edit = new Intent(NewListActivity.this, EditPermissionsActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("friendId", permissions.getUserId());
+                    extras.putString("listId", synclistId);
+                    edit.putExtras(extras);
+                    startActivity(edit);
+                }
+
 
 
             }
@@ -100,6 +118,7 @@ public class NewListActivity extends Activity {
             listInfoView.setText(synclistId);
             ParseQuery<SyncList> query = SyncList.getQuery();
             query.whereEqualTo("objectId", synclistId);
+            query.include("creator");
             query.getFirstInBackground(new GetCallback<SyncList>() {
 
                 @Override
@@ -107,8 +126,9 @@ public class NewListActivity extends Activity {
                     if (!isFinishing()) {
                         synclist = object;
                         Log.i("newlistact", "synlistnamt: "+synclist.getName());
+                        Log.i("newlistAct", "creator name: "+synclist.getCreator().getUsername());
                         listName.setText(synclist.getName());
-                        //setListProperties();
+                        setListProperties();
 
                         //deleteButton.setVisibility(View.VISIBLE);
                     }
@@ -317,10 +337,45 @@ public class NewListActivity extends Activity {
     }
 
     private void setListProperties(){
-        listName.setText(synclist.getName());
+        if (currentUser == synclist.getCreator()){
+            // current user is creator don't query for permissions
+            userPermis.setText(getString(R.string.your_list_permissions, "creator"));
+            creator.setText(getString(R.string.list_creator, currentUser.getUsername()));
+            deleteButton.setVisibility(View.VISIBLE);
+
+        } else {
+            ParseQuery<List_permissions> userPermisQuery = List_permissions.getQuery();
+            userPermisQuery.whereEqualTo("list_id", synclistId);
+            userPermisQuery.whereEqualTo("user_id", currentUser.getObjectId());
+
+            userPermisQuery.getFirstInBackground(new GetCallback<List_permissions>() {
+                @Override
+                public void done(List_permissions permissions, ParseException e) {
+                    if (e == null) {
+                        if (!isFinishing()) {
+                            userLp = permissions;
+                            listName.setText(synclist.getName());
+                            creator.setText(getString(R.string.list_creator, synclist.getCreator().getUsername()));
+                            userPermis.setText(getString(R.string.your_list_permissions, userLp.getPermissionType() ));
+                            if (userLp.getPermissionType().contentEquals("watcher")){
+                                listName.setFocusable(false);
+                                listName.setFocusableInTouchMode(false);
+                                saveButton.setVisibility(View.INVISIBLE);
+                                shareButton.setVisibility(View.INVISIBLE);
+
+                            }
 
 
-    }
+                        }
+                    } else {
+                        Log.i("TodoListActivity",
+                                "setListProperties: Error finding  user permission: "
+                                        + e.getMessage());
+                    }
+                }
+            });
+        }
+    } // end setListProperties
 
     private class PermissionsAdapter extends ParseQueryAdapter<List_permissions> {
 
@@ -358,7 +413,12 @@ public class NewListActivity extends Activity {
         TextView friendName;
         TextView permissionType;
     }
+    protected void onResume() {
+        super.onResume();
+        permissionsAdapter.notifyDataSetChanged();
+        // Check if we have a real user
 
+    }
    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
