@@ -19,7 +19,11 @@
         android:icon="@drawable/pencil_50"
         android:title="@string/edit_todos"
         android:showAsAction="ifRoom"/>
-
+    <item
+        android:id="@+id/goto_main_menu"
+        android:showAsAction="never"
+        android:title="Main Menu">
+    </item>
 
 
     <item
