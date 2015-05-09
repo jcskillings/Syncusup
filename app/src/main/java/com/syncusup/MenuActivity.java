@@ -14,12 +14,14 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
 
 public class MenuActivity extends Activity implements View.OnClickListener {
     int objectSize;
+    private Notif anotif;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,34 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                     objectSize = objects.size();
                     for (int i = 0; i < objectSize; i++) {
                         final ParseObject r = objects.get(i);
-                        if(r.getString("status").equals("accepted")){
+                        if(r.getString("status").equals("accepted") && r.getString("Checked").equals("No")){
+
+                                                anotif = new Notif();
+                                                anotif.setTitle("You have a new friend!");
+                                                anotif.setUuidString();
+                                                anotif.setDraft(true);
+                                                anotif.pinInBackground();
+
+                                                ParseRelation relation2 = currentUser.getRelation("Notif");
+                                                relation2.add(anotif);
+                                                currentUser.saveInBackground();
+                                                anotif.saveInBackground(new SaveCallback() {
+
+                                                    @Override
+                                                    public void done(ParseException e) {
+
+
+                                                        ParseRelation relation1 = currentUser.getRelation("Notif");
+                                                        relation1.add(anotif);
+                                                        currentUser.saveInBackground();
+
+                                                    }
+                                                });
+
+
+
+
+
                             ParseRelation relation = currentUser.getRelation("Friends");
                             ParseQuery query = relation.getQuery();
                             query.findInBackground(new FindCallback<ParseObject>() {
@@ -79,6 +108,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                                 }
                             });
                         }
+
                         else if(r.getString("status").equals("ignored")){
                             ParseRelation relation = currentUser.getRelation("Friends");
                             ParseQuery query = relation.getQuery();
@@ -146,7 +176,10 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                 }
             }
         });
+
     }
+
+
     public void onClick(View v){
         switch (v.getId()){
             case R.id.todo_button:

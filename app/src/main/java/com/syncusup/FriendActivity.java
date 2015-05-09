@@ -31,7 +31,7 @@ public class FriendActivity extends Activity{
     public void onStart() {
         super.onStart();
     }
-
+    private Notif anotif;
     ParseObject userObject;
     String username;
     String name;
@@ -117,35 +117,18 @@ public class FriendActivity extends Activity{
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 //removes all old copies in user relation
-                if(objects.size() > 0){ //removes relation to curruser
-                    objectSize2 = objects.size();
-                    for(int x = 0; x < objectSize2; x++){
-                        String friendId = objects.get(x).getString("friend_id");
-                        if(friendId.equals(currentUser.getObjectId())){
-                            try {
-                                objectSize2--;
-                                objects.get(x).delete();
-                                x--;
-                                Toast.makeText(getApplicationContext(), "Please don't send requests to yourself",
-                                        Toast.LENGTH_LONG).show();
-                            } catch (ParseException e1) {
-                                Toast.makeText(getApplicationContext(), "unable to delete",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }
-                }
-                if (objects.size() > 1) { //removes new copies of relation to a user
-                    objectSize2 = objects.size();
-                    for(int x = 0; x < objectSize2-1; x++){
-                        String friendId = objects.get(x).getString("friend_id");
-                        for(int y = x+1; y<objectSize2-1;y++){
-                            String nextFriend = objects.get(y).getString("friend_id");
-                            if(friendId.equals(nextFriend)){
+                if (objects != null) {
+                    if (objects.size() > 0) { //removes relation to curruser
+                        objectSize2 = objects.size();
+                        for (int x = 0; x < objectSize2; x++) {
+                            String friendId = objects.get(x).getString("friend_id");
+                            if (friendId.equals(currentUser.getObjectId())) {
                                 try {
                                     objectSize2--;
-                                    objects.get(y).delete();
-                                    y--;
+                                    objects.get(x).delete();
+                                    x--;
+                                    Toast.makeText(getApplicationContext(), "Please don't send requests to yourself",
+                                            Toast.LENGTH_LONG).show();
                                 } catch (ParseException e1) {
                                     Toast.makeText(getApplicationContext(), "unable to delete",
                                             Toast.LENGTH_LONG).show();
@@ -153,6 +136,31 @@ public class FriendActivity extends Activity{
                             }
                         }
                     }
+
+
+                    if (objects.size() > 1) { //removes new copies of relation to a user
+                        objectSize2 = objects.size();
+                        for (int x = 0; x < objectSize2 - 1; x++) {
+                            String friendId = objects.get(x).getString("friend_id");
+                            for (int y = x + 1; y < objectSize2 - 1; y++) {
+                                String nextFriend = objects.get(y).getString("friend_id");
+                                if (friendId.equals(nextFriend)) {
+                                    try {
+                                        objectSize2--;
+                                        objects.get(y).delete();
+                                        y--;
+                                    } catch (ParseException e1) {
+                                        Toast.makeText(getApplicationContext(), "unable to delete",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                }else{
+
                 }
             }
         });
@@ -173,65 +181,65 @@ public class FriendActivity extends Activity{
 
             pending.setOnClickListener(new View.OnClickListener()
 
-            {
-                @Override
-                public void onClick (View v){
-                Intent intent = new Intent(FriendActivity.this, PendingFriends.class);
-                startActivity(intent);
-            }
-            }
+                                       {
+                                           @Override
+                                           public void onClick(View v) {
+                                               Intent intent = new Intent(FriendActivity.this, PendingFriends.class);
+                                               startActivity(intent);
+                                           }
+                                       }
 
             );
 
             search.setOnClickListener(new View.OnClickListener()
 
-            {
+                                      {
 
-                @Override
-                public void onClick (View v){
-                final String code = inviteCode.getText().toString();
+                                          @Override
+                                          public void onClick(View v) {
+                                              final String code = inviteCode.getText().toString();
 
-                final ParseQuery query = ParseUser.getQuery();
-                query.whereEqualTo("objectId", code);
-                query.findInBackground(new FindCallback<ParseObject>() {
+                                              final ParseQuery query = ParseUser.getQuery();
+                                              query.whereEqualTo("objectId", code);
+                                              query.findInBackground(new FindCallback<ParseObject>() {
 
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-                        try {
-                            userObject = objects.get(0);
-                            Add.setVisibility(View.VISIBLE);
-                            password = userObject.getString("password");
-                            username = userObject.getString("username");
-                            name = userObject.getString("name");
-                            friendId = userObject.getObjectId();
-                            ResultText.setText(username);
-                            ResultText2.setText(name);
-                            ResultText3.setText(friendId);
-                            ResultFrame.setVisibility(View.VISIBLE);
-                            nicknameEdit.setVisibility(View.VISIBLE);
-                            nicknameEdit.setText("");
-                            Message.setText("");
-                            allBox.setChecked(false);
-                            friendBox.setChecked(false);
-                            workBox.setChecked(false);
-                            familyBox.setChecked(false);
-                            personalBox.setChecked(false);
-                            schoolBox.setChecked(false);
-                            Add.setVisibility(View.VISIBLE);
-                            Message.setVisibility(View.VISIBLE);
-                            Toast.makeText(getApplicationContext(), "User Found",
-                                    Toast.LENGTH_LONG).show();
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "User Not Found",
-                                    Toast.LENGTH_LONG).show();
-                        }
+                                                  @Override
+                                                  public void done(List<ParseObject> objects, ParseException e) {
+                                                      try {
+                                                          userObject = objects.get(0);
+                                                          Add.setVisibility(View.VISIBLE);
+                                                          password = userObject.getString("password");
+                                                          username = userObject.getString("username");
+                                                          name = userObject.getString("name");
+                                                          friendId = userObject.getObjectId();
+                                                          ResultText.setText(username);
+                                                          ResultText2.setText(name);
+                                                          ResultText3.setText(friendId);
+                                                          ResultFrame.setVisibility(View.VISIBLE);
+                                                          nicknameEdit.setVisibility(View.VISIBLE);
+                                                          nicknameEdit.setText("");
+                                                          Message.setText("");
+                                                          allBox.setChecked(false);
+                                                          friendBox.setChecked(false);
+                                                          workBox.setChecked(false);
+                                                          familyBox.setChecked(false);
+                                                          personalBox.setChecked(false);
+                                                          schoolBox.setChecked(false);
+                                                          Add.setVisibility(View.VISIBLE);
+                                                          Message.setVisibility(View.VISIBLE);
+                                                          Toast.makeText(getApplicationContext(), "User Found",
+                                                                  Toast.LENGTH_LONG).show();
+                                                      } catch (Exception e2) {
+                                                          e2.printStackTrace();
+                                                          Toast.makeText(getApplicationContext(), "User Not Found",
+                                                                  Toast.LENGTH_LONG).show();
+                                                      }
 
-                    }
-                });
+                                                  }
+                                              });
 
-            }
-            }
+                                          }
+                                      }
 
             );
 
@@ -291,6 +299,7 @@ public class FriendActivity extends Activity{
                         friendRequest.put("fromUser", currentUser.getObjectId());
                         friendRequest.put("toUser", userObject.getObjectId());
                         friendRequest.put("status", "pending");
+                        friendRequest.put("Checked", "No");
                         friendRequest.put("message", Message.getText().toString());
                         ParseACL acl = new ParseACL();
                         acl.setPublicReadAccess(true);
@@ -309,6 +318,25 @@ public class FriendActivity extends Activity{
                             }
 
                         });
+
+                        anotif = new Notif();
+                        anotif.setTitle("You sent a friend request!");
+                        anotif.setUuidString();
+                        anotif.setDraft(true);
+                        anotif.saveInBackground(new SaveCallback(){
+
+                            public void done(ParseException e) {
+
+                                // TODO Auto-generated method stub
+                                ParseRelation relation = currentUser.getRelation("Notif");
+                                relation.add(anotif);
+                                currentUser.saveInBackground();
+                            }
+
+                        });
+                        anotif.pinInBackground();
+
+
                         Toast.makeText(getApplicationContext(), "Friend request has been sent!",
                                 Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(FriendActivity.this, FriendActivity.class);

@@ -32,7 +32,7 @@ import com.parse.SaveCallback;
  * Created by Owner on 5/1/2015.
  */
 public class PendingFriends extends ListActivity{
-
+    private Notif anotif;
     @Override
     public void onStart() {
         super.onStart();
@@ -214,6 +214,7 @@ public class PendingFriends extends ListActivity{
                 public void onClick(View v){
 
                     topRequest.put("status", "accepted");
+                    topRequest.put("Checked","No");
                     topRequest.saveInBackground();
                     final Friend friend = new Friend();
                     friend.put("username", username);
@@ -243,6 +244,23 @@ public class PendingFriends extends ListActivity{
                         }
 
                     });
+                    anotif = new Notif();
+                    anotif.setTitle("You accepted a friend request!");
+                    anotif.setUuidString();
+                    anotif.setDraft(true);
+                    anotif.saveInBackground(new SaveCallback() {
+
+                        public void done(ParseException e) {
+
+                            // TODO Auto-generated method stub
+                            ParseRelation relation = currentUser.getRelation("Notif");
+                            relation.add(anotif);
+                            currentUser.saveInBackground();
+                        }
+
+                    });
+                    anotif.pinInBackground();
+
                     Toast.makeText(getApplicationContext(), "Friend status updated!",
                             Toast.LENGTH_LONG).show();
 

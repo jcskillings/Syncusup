@@ -13,15 +13,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.util.List;
 
 /**
  * Activity which displays a login screen to the user, offering registration as well.
  */
 public class LoginActivity extends Activity {
   // UI references.
+  private Notif anotif;
+  ParseObject topRequest;
   private EditText usernameEditText;
   private EditText passwordEditText;
 
@@ -97,6 +106,61 @@ public class LoginActivity extends Activity {
             toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
             toast.show();
         } else {
+          final ParseUser currentUser = ParseUser.getCurrentUser();
+          if (currentUser != null) {
+
+            ParseQuery<ParseObject> query1 = ParseQuery.getQuery("FriendRequests");
+            query1.whereEqualTo("toUser", currentUser.getObjectId());
+            query1.whereEqualTo("status", "pending");
+            query1.whereEqualTo("Checked", "No");
+            query1.findInBackground(new FindCallback<ParseObject>() {
+
+              @Override
+              public void done(List<ParseObject> objects, ParseException e) {
+
+
+                if (objects.size() != 0) {
+
+                  for (int p = 0; p < objects.size(); p++) {
+                    topRequest = objects.get(p);
+
+                    anotif = new Notif();
+                    anotif.setTitle("You have a new friend request!");
+                    anotif.setUuidString();
+                    anotif.setDraft(true);
+                    anotif.pinInBackground();
+                    topRequest.put("Checked", "Yes");
+                    topRequest.saveInBackground();
+                    ParseRelation relation = currentUser.getRelation("Notif");
+                    relation.add(anotif);
+                    currentUser.saveInBackground();
+                    anotif.saveInBackground(new SaveCallback() {
+
+                      @Override
+                      public void done(ParseException e) {
+
+
+                        ParseRelation relation = currentUser.getRelation("Notif");
+                        relation.add(anotif);
+                        currentUser.saveInBackground();
+
+                      }
+                    });
+
+
+                  }
+
+                } else {
+
+
+                }
+
+              }
+            });
+          }
+
+
+
           // Start an intent for the dispatch activity
           Intent intent = new Intent(LoginActivity.this, DispatchActivity.class);
           intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

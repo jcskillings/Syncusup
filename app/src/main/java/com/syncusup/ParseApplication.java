@@ -22,6 +22,7 @@ public class ParseApplication extends Application {
     Parse.enableLocalDatastore(this);
       // add Todo subclass and SyncList subclass
       ParseObject.registerSubclass(Todo.class);
+    ParseObject.registerSubclass(Notif.class);
       ParseObject.registerSubclass(SyncList.class);
       ParseObject.registerSubclass(Friend.class);
       ParseObject.registerSubclass(List_permissions.class);
