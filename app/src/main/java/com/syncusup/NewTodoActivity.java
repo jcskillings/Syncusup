@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,12 +37,14 @@ public class NewTodoActivity extends Activity {
     private TextView dateCompleted;
     private ParseUser currentUser;
     private List_permissions userLp;
+    private boolean editMode = false;
     //private SyncList parentList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Edit todo");
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN); // NO KEYBOARD!!!
         setContentView(R.layout.activity_new_todo);
         currentUser = ParseUser.getCurrentUser();
         //Intent intent = getIntent();
@@ -53,6 +57,8 @@ public class NewTodoActivity extends Activity {
         parentListId = extras.getString("parentListId");
         if (parentListId == null) {
             Log.i("NewTodoActivity", "parentListId extra was null");
+        } else {
+            Log.i("newtodoAct", "parentLIstId: "+parentListId);
         }
         todoText = (EditText) findViewById(R.id.todo_text);
         descriptionText = (EditText) findViewById(R.id.description_text);
@@ -60,20 +66,71 @@ public class NewTodoActivity extends Activity {
         editButton = (Button) findViewById(R.id.editButton);
         deleteButton = (Button) findViewById(R.id.deleteButton);
         parentText = (TextView) findViewById(R.id.parentList);
+
         completeButton = (Button) findViewById(R.id.completeButton);
 
         whoCompleted = (TextView) findViewById(R.id.whoCompleted);
         dateCompleted = (TextView) findViewById(R.id.dateCompleted);
+        deleteButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // The todo will be deleted eventually but will
+                // immediately be excluded from query results.
+                todo.deleteEventually();
+                setResult(Activity.RESULT_OK);
+                finish();
+            }
+
+        });
+
+        completeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                todo.setCompleted(true);
+                todo.setWhoCompleted(ParseUser.getCurrentUser());
+                finish();
+            }
+        });
+
+        editButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO check if user has permissions to edit
+                if (!todo.isCompleted()) {
+                    //Log.i("newtodo", "edit button was clicked");
+                    if (editMode == false) {
+                        editButton.setText("Cancel");
+                        saveButton.setVisibility(View.VISIBLE);
+                        todoText.setFocusableInTouchMode(true);
+                        todoText.setFocusable(true);
+                        descriptionText.setFocusableInTouchMode(true);
+                        descriptionText.setFocusable(true);
+                        editMode = true;
+                    } else {
+                        // hide keyboard
+                        editMode = false;
+                        hideSoftKeyboard(NewTodoActivity.this);
+                        todoText.setFocusable(false);
+                        descriptionText.setFocusable(false);
+                        editButton.setText("Edit");
+                        saveButton.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        });
 		/*if (getIntent().hasExtra("ID")) {
 			todoId = getIntent().getExtras().getString("ID");
 
 		}
+
         if (getIntent().hasExtra("parentListId")){
             parentListId = getIntent().getExtras().getString("parentListId");
         } else {
             Log.i("NewTodoActivity", "No parentListId was passed in extras");
         } */
         ParseQuery<SyncList> query = SyncList.getQuery();
+        query.include("creator");
         query.whereEqualTo("objectId", parentListId);
         query.getFirstInBackground(new GetCallback<SyncList>() {
             @Override
@@ -81,13 +138,12 @@ public class NewTodoActivity extends Activity {
                 if (!isFinishing()) {
                     parentList = syncList;
                     parentText.setText(parentList.getName());
+                    Log.i("newtodoAct", "creator name: "+parentList.getCreator().getUsername());
                     getTodo();
                 }
             }
         });
-        if (parentList == null) {
-            Log.i("newtodo", "on create, parentList is null");
-        }
+
     } // end onCreate
 
     private void getTodo() {
@@ -95,7 +151,12 @@ public class NewTodoActivity extends Activity {
         if (todoId == null) {
             Log.i("NewTodo", "adding new, todoId was null");
             todo = new Todo();
+            todo.setWhoCreated(currentUser);
+            todo.setDraft(false);
+            todo.setCompleted(false);
             todo.setUuidString();
+            saveButton.setVisibility(View.VISIBLE);
+            completeButton.setVisibility(View.VISIBLE);
         } else {
             ParseQuery<Todo> listquery = Todo.getQuery();
             //listquery.fromLocalDatastore();
@@ -107,28 +168,33 @@ public class NewTodoActivity extends Activity {
 
                 @Override
                 public void done(Todo object, ParseException e) {
-                    if (!isFinishing()) {
-                        todo = object;
-                        if (todo == null) {
-                            Log.i("newtodoact", "todo in callback null");
-                        } else {
-                            todoText.setText(todo.getTitle());
-                            todoText.setFocusable(false);
-                            descriptionText.setText(todo.getDescription());
-                            descriptionText.setFocusable(false);
-                            parentText.setText(parentList.getName());
-                            deleteButton.setVisibility(View.VISIBLE);
-                            if (todo.isCompleted()==true){
-                                whoCompleted.setVisibility(View.VISIBLE);
-                                whoCompleted.setText("Completed By: " +todo.getWhoCompleted().getUsername());
-                                dateCompleted.setVisibility(View.VISIBLE);
-                                dateCompleted.setText("Date Completed: "+todo.getDate("dateCompleted"));
+                    if (e == null) {
+                        if (!isFinishing()) {
+                            todo = object;
+                            if (todo == null) {
+                                Log.i("newtodoact", "todo in callback null");
                             } else {
-                                whoCompleted.setVisibility(View.INVISIBLE);
-                                dateCompleted.setVisibility(View.INVISIBLE);
+                                todoText.setText(todo.getTitle());
+                                todoText.setFocusable(false);
+                                descriptionText.setText(todo.getDescription());
+                                descriptionText.setFocusable(false);
+                                parentText.setText(parentList.getName());
+                                deleteButton.setVisibility(View.VISIBLE);
+                                if (todo.isCompleted() == true) {
+                                    whoCompleted.setVisibility(View.VISIBLE);
+                                    whoCompleted.setText("Completed By: " + todo.getWhoCompleted().getUsername());
+                                    dateCompleted.setVisibility(View.VISIBLE);
+                                    dateCompleted.setText("Date Completed: " + todo.getDate("dateCompleted"));
+                                } else {
+                                    whoCompleted.setVisibility(View.INVISIBLE);
+                                    dateCompleted.setVisibility(View.INVISIBLE);
+                                }
+                                setListProperties();
                             }
-                            setListProperties();
                         }
+                    }else {
+                    Log.i("NewTodoListActivity",
+                            "setListProperties: Error finding todo item : " + e.getMessage());
                     }
                 }
 
@@ -136,26 +202,7 @@ public class NewTodoActivity extends Activity {
 
         }
 
-        editButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO check if user has permissions to edit
-                //Log.i("newtodo", "edit button was clicked");
-                if (editButton.getText().toString() == "Edit") {
-                    editButton.setText("Cancel");
-                    saveButton.setVisibility(View.VISIBLE);
-                    todoText.setFocusableInTouchMode(true);
-                    todoText.setFocusable(true);
-                    descriptionText.setFocusableInTouchMode(true);
-                    descriptionText.setFocusable(true);
-                } else {
-                    todoText.setFocusable(false);
-                    descriptionText.setFocusable(false);
-                    editButton.setText("Edit");
-                    saveButton.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
+
 
         saveButton.setOnClickListener(new OnClickListener() {
 
@@ -196,27 +243,7 @@ public class NewTodoActivity extends Activity {
 
         });
 
-        deleteButton.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                // The todo will be deleted eventually but will
-                // immediately be excluded from query results.
-                todo.deleteEventually();
-                setResult(Activity.RESULT_OK);
-                finish();
-            }
-
-        });
-
-        completeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                todo.setCompleted(true);
-                todo.setWhoCompleted(ParseUser.getCurrentUser());
-                finish();
-            }
-        });
 
 
     }
@@ -226,7 +253,7 @@ public class NewTodoActivity extends Activity {
             completeButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
-            saveButton.setVisibility(View.VISIBLE);
+
 
         } else {
             ParseQuery<List_permissions> userPermisQuery = List_permissions.getQuery();
@@ -276,6 +303,10 @@ public class NewTodoActivity extends Activity {
             });
         }
     } // end setListProperties
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
 }
 
 

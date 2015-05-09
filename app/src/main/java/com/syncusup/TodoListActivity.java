@@ -231,7 +231,8 @@ public class TodoListActivity extends Activity {
         i.putExtras(extras);
         //i.putExtra("ID", todo.getUuidString());
         //i.putExtra("parentListId", syncListId);
-        startActivityForResult(i, EDIT_ACTIVITY_CODE);
+        startActivity(i);
+        //startActivityForResult(i, EDIT_ACTIVITY_CODE);
     }
 
     @Override
