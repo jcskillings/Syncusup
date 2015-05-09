@@ -1,36 +1,53 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@android:style/Theme.Holo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".WelcomeActivity" >
+    tools:context=".WelcomeActivity"
+    android:orientation="vertical">
+    <ImageView
+        android:layout_width="102dp"
+        android:layout_height="99dp"
+        android:id="@+id/synqusup_logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/synqusup_logo"
+        android:focusableInTouchMode="true"
+        android:visibility="visible"
+        android:layout_gravity="center_horizontal" />
 
-    <Button
-        android:id="@+id/login_button"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/synqusup_logotext"
+        android:layout_below="@+id/synqusup_logo"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/synqusup_textdark"
+        android:visibility="visible" />
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="@string/login"
+        android:layout_below="@+id/synqusup_logotext"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="128dp"
-        android:text="@string/login" />
+        android:visibility="visible"
+        android:background="@drawable/synqusup_button_s"
+        android:layout_gravity="center_horizontal" />
 
     <Button
         android:id="@+id/signup_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
         android:layout_below="@id/login_button"
-        android:text="@string/signup" />
+        android:text="@string/signup"
+        android:visibility="visible"
+        android:background="@drawable/synqusup_button_s"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:id="@+id/textview_1"
@@ -38,9 +55,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="52dp"
+        android:layout_below="@+id/signup_button"
+        android:layout_marginTop="20dp"
         android:text="@string/powered_by"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_gravity="center_horizontal" />
 
     <TextView
         android:id="@+id/textview_2"
@@ -48,18 +67,12 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/textview_1"
         android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textview_1"
         android:layout_marginTop="19dp"
         android:text="@string/parse"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_gravity="center_horizontal" />
 
-    <TextView
-        android:id="@+id/textview_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="23dp"
-        android:text="@string/slogan"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-</RelativeLayout>
+
+</LinearLayout>

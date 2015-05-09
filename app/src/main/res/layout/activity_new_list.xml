@@ -39,7 +39,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/save"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/textView3"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -49,8 +49,7 @@
         android:layout_height="wrap_content"
         android:text="@string/delete"
         android:visibility="invisible"
-        android:layout_alignBaseline="@+id/saveButton"
-        android:layout_alignBottom="@+id/saveButton"
+        android:layout_below="@+id/saveButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
     <TextView
@@ -78,7 +77,7 @@
         android:layout_height="wrap_content"
         android:text="Share List"
         android:id="@+id/share_list_button"
-        android:layout_above="@+id/textView3"
+        android:layout_below="@+id/shared_with"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -87,16 +86,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="List Creator"
+        android:layout_marginTop="10dp"
         android:id="@+id/textView3"
-        android:layout_above="@+id/saveButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/permission_spinner"
-        android:layout_below="@+id/shared_with"
+        android:layout_below="@+id/share_list_button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

@@ -7,38 +7,69 @@
     android:layout_height="fill_parent"
     android:background="@color/background"
     android:gravity="center"
-    android:padding="30dip">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/main_title"
-        android:layout_marginBottom="25dip"
-        android:textSize="24.5sp"/>
+    android:padding="30dip"
+    android:weightSum="1">
+
+    <ImageView
+        android:layout_width="77dp"
+        android:layout_height="74dp"
+        android:id="@+id/main_menu_logo"
+        android:layout_gravity="center_horizontal"
+        android:focusable="true"
+        android:src="@drawable/synqusup_logo" />
+
+    <ImageView
+        android:layout_width="189dp"
+        android:layout_height="77dp"
+        android:id="@+id/main_menu_text_logo"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/synqusup_textdark"
+        android:focusableInTouchMode="true" />
+
     <Button
         android:id="@+id/todo_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/my_todos_label" />
+        android:layout_width="200dp"
+
+        android:layout_height="45dp"
+        android:text="@string/my_todos_label"
+        android:background="@drawable/synqusup_button_s" />
     <Button
         android:id="@+id/calendar_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/my_Calendar_label" />
+        android:layout_marginTop="10dp"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:text="@string/my_Calendar_label"
+        android:background="@drawable/synqusup_button_s" />
     <Button
         android:id="@+id/notifs_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/Notifications_label" />
+        android:layout_marginTop="10dp"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:text="@string/Notifications_label"
+        android:background="@drawable/synqusup_button_s" />
 
     <Button
         android:id="@+id/shared_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/Shared_Lists_label" />
+        android:layout_marginTop="10dp"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:text="@string/Shared_Lists_label"
+        android:background="@drawable/synqusup_button_s" />
     <Button
         android:id="@+id/friends_button"
-        android:layout_width="fill_parent"
+        android:layout_marginTop="10dp"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:text="@string/My_friends_label"
+        android:background="@drawable/synqusup_button_s" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/My_friends_label" />
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/my_invite_code"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
