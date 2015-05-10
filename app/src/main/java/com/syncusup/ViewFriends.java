@@ -4,11 +4,13 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,11 +57,14 @@ public class ViewFriends extends ListActivity{
             final Button Edit = (Button)findViewById(R.id.edit);
             final Button Remove = (Button)findViewById(R.id.remove);
             final Button Ignore = (Button)findViewById(R.id.ignored);
+            final Button Calendar = (Button)findViewById(R.id.calendar);
             final EditText inviteCode = (EditText) findViewById(R.id.inviteCode);
             final TextView ResultText = (TextView)findViewById(R.id.textView);
+
             ParseRelation relation = currentUser.getRelation("Friends");
             ParseQuery query = relation.getQuery();
             query.whereEqualTo("status", "friend");
+            //query.whereNotEqualTo("friend_id", currentUser.getObjectId());
             query.findInBackground(new FindCallback<ParseObject>() {
 
                 @Override
@@ -87,6 +92,7 @@ public class ViewFriends extends ListActivity{
                             Boolean personal = r.getBoolean("personal");
                             if (all == true) {
                                 total += "all";
+                                count++;
                             } else {
                                 if (family == true) {
                                     total += "family";
@@ -95,18 +101,22 @@ public class ViewFriends extends ListActivity{
                                 if (friend == true) {
                                     if (count == 0) total += "friend";
                                     else total += ", friend";
+                                    count++;
                                 }
                                 if (work == true) {
                                     if (count == 0) total += "work";
                                     else total += ", work";
+                                    count++;
                                 }
                                 if (school == true) {
                                     if (count == 0) total += "school";
                                     else total += ", school";
+                                    count++;
                                 }
                                 if (personal == true) {
                                     if (count == 0) total += "personal";
                                     else total += ", personal";
+                                    count++;
                                 }
                             }
                             if(count == 0)total+="None";
@@ -124,6 +134,9 @@ public class ViewFriends extends ListActivity{
 
                 @Override
                 public void onClick(View v){
+                    InputMethodManager imm = (InputMethodManager)getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(inviteCode.getWindowToken(), 0);
                     final int numEntered;
                     try {
                         numEntered = Integer.parseInt(inviteCode.getText().toString());
@@ -149,7 +162,40 @@ public class ViewFriends extends ListActivity{
 
                 @Override
                 public void onClick(View v) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(inviteCode.getWindowToken(), 0);
                     Intent intent = new Intent(ViewFriends.this, IgnoreActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            Calendar.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(inviteCode.getWindowToken(), 0);
+
+                    final int numEntered;
+                    try {
+                        numEntered = Integer.parseInt(inviteCode.getText().toString());
+                    }
+                    catch(Exception e2){
+                        Toast.makeText(getApplicationContext(), "You entered invalid input!",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if(numEntered < 1 || numEntered > friendIds.size() ){
+                        Toast.makeText(getApplicationContext(), "You entered an invalid friend number!",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    Intent intent = new Intent(getBaseContext(), FriendCalendarActivity.class);
+                    intent.putExtra("EXTRA_SESSION_ID",
+                            friendIds.get(numEntered-1));
                     startActivity(intent);
                 }
             });

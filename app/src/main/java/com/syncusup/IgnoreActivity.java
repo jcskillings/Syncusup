@@ -53,6 +53,7 @@ public class IgnoreActivity extends ListActivity {
             final TextView ResultText = (TextView) findViewById(R.id.textView);
             ParseRelation relation = currentUser.getRelation("Friends");
             ParseQuery query = relation.getQuery();
+            query.whereNotEqualTo("friend_id", currentUser.getObjectId());
             query.whereEqualTo("status", "youIgnoredThem");
             query.whereEqualTo("status", "youRemovedThem");
             query.findInBackground(new FindCallback<ParseObject>() {

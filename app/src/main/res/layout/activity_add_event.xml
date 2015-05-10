@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddEventActivity"
+    android:weightSum="1">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.26"
+        android:id="@+id/frame">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Start Date:"
+            android:id="@+id/viewSDate"
+            android:layout_gravity="center_horizontal|top" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="End Date:"
+            android:id="@+id/viewEDate"
+            android:layout_gravity="right|top" />
+
+        <EditText
+            android:layout_width="118dp"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:ems="10"
+            android:hint="mm/dd/yyyy"
+            android:id="@+id/startDate"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Start Time:"
+            android:id="@+id/viewSTime"
+            android:layout_gravity="center_horizontal|bottom" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="End Time:"
+            android:id="@+id/viewETime"
+            android:layout_gravity="right|bottom" />
+
+        <EditText
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:ems="10"
+            android:id="@+id/endDate"
+            android:imeOptions="actionDone"
+            android:hint="mm/dd/yyyy"
+            android:layout_gravity="right|center_vertical" />
+
+        <TextView
+            android:layout_width="112dp"
+            android:layout_height="38dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/creatorId"
+            android:layout_gravity="left|top" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="event named:"
+            android:id="@+id/view1"
+            android:layout_gravity="left|center_vertical" />
+
+        <EditText
+            android:layout_width="126dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:hint="MyEvent"
+            android:imeOptions="actionDone"
+            android:id="@+id/eventName"
+            android:layout_gravity="left|bottom" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.28">
+
+        <EditText
+            android:layout_width="122dp"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:hint="00:00"
+            android:ems="10"
+            android:id="@+id/startTime"
+            android:layout_gravity="center_horizontal|top" />
+
+        <EditText
+            android:layout_width="118dp"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:hint="23:59"
+            android:ems="10"
+            android:id="@+id/endTime"
+            android:imeOptions="actionDone"
+            android:layout_gravity="right|top" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Everyone"
+            android:id="@+id/everyone"
+            android:layout_gravity="left|center_vertical"
+            android:checked="false" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="School"
+            android:id="@+id/school"
+            android:paddingRight="10dp"
+            android:layout_gravity="center"
+            android:checked="false" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Family"
+            android:id="@+id/family"
+            android:layout_gravity="left|bottom"
+            android:checked="false" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Work"
+            android:id="@+id/work"
+            android:paddingRight="29dp"
+            android:layout_gravity="right|center_vertical"
+            android:checked="false" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Personal"
+            android:id="@+id/personal"
+            android:layout_gravity="center_horizontal|bottom"
+            android:checked="false" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Friends"
+            android:id="@+id/friends"
+            android:paddingRight="12dp"
+            android:layout_gravity="right|bottom"
+            android:checked="false" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Private"
+            android:id="@+id/privatebox"
+            android:layout_gravity="left|top"
+            android:checked="false" />
+
+    </FrameLayout>
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioGroup">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            android:layout_weight="0.04">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="One Time"
+                android:id="@+id/radioButton1"
+                android:paddingRight="0dp"
+                android:checked="false"
+                android:onClick="onRadioButtonClicked"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekdays"
+                android:id="@+id/radioButton2"
+                android:checked="false"
+                android:onClick="onRadioButtonClicked"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekends"
+                android:id="@+id/radioButton3"
+                android:checked="false"
+                android:onClick="onRadioButtonClicked"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.04">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekly"
+                android:id="@+id/radioButton4"
+                android:paddingRight="17dp"
+                android:checked="false"
+                android:onClick="onRadioButtonClicked"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Biweekly"
+                android:id="@+id/radioButton5"
+                android:paddingRight="12dp"
+                android:checked="false"
+                android:onClick="onRadioButtonClicked"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monthly"
+                android:id="@+id/radioButton6"
+                android:checked="false"
+                android:onClick="onRadioButtonClicked"/>
+
+        </LinearLayout>
+    </RadioGroup>
+    <TextView
+        android:layout_width="223dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Description:"
+        android:id="@+id/textView"
+        android:layout_weight="0.05" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:id="@+id/description"
+        android:layout_gravity="center_horizontal"
+        android:imeOptions="actionDone"
+        android:layout_weight="0.22" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.10"
+        android:weightSum="1">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Save Event"
+            android:id="@+id/save"
+            android:layout_weight="0.49" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="2dp"
+            android:text="Cancel"
+            android:id="@+id/cancel"
+            android:layout_weight="0.49" />
+    </LinearLayout>
+
+</LinearLayout>

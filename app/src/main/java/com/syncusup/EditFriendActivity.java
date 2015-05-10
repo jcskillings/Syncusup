@@ -35,8 +35,6 @@ public class EditFriendActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             value = extras.getString("EXTRA_SESSION_ID");
-            Toast.makeText(getApplicationContext(), value,
-                    Toast.LENGTH_LONG).show();
         }
         setContentView(R.layout.activity_edit_friend);
 
@@ -99,7 +97,12 @@ public class EditFriendActivity extends Activity {
                     editFriend.put("work", workBox.isChecked());
                     editFriend.put("school", schoolBox.isChecked());
                     editFriend.put("personal", personalBox.isChecked());
-                    editFriend.saveInBackground();
+                    try {
+                        editFriend.save();
+                    } catch (ParseException e) {
+                        Toast.makeText(getApplicationContext(), "issue saving",
+                                Toast.LENGTH_LONG).show();
+                    }
                     Intent intent = new Intent(getBaseContext(), ViewFriends.class);
                     startActivity(intent);
                 }
