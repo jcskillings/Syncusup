@@ -241,7 +241,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     public void getPrivateTodos(){
         //TODO change to launch private todos
         ParseQuery<SyncList> privListQuery= SyncList.getQuery();
-        privListQuery.whereEqualTo("privateTodos", true);
+        privListQuery.whereEqualTo("name", ParseUser.getCurrentUser().getUsername()+"'s Todos"); // kind of a hack the boolean i was using does not appear in the parse columns
         privListQuery.whereEqualTo("creator", ParseUser.getCurrentUser());
         privListQuery.getFirstInBackground(new GetCallback<SyncList>() {
             @Override
