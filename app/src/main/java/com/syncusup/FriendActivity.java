@@ -1,4 +1,5 @@
 package com.syncusup;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -31,7 +32,7 @@ public class FriendActivity extends Activity{
     public void onStart() {
         super.onStart();
     }
-
+    private Notif anotif;
     ParseObject userObject;
     String username;
     String name;
@@ -64,6 +65,8 @@ public class FriendActivity extends Activity{
         final FrameLayout ResultFrame = (FrameLayout)findViewById(R.id.ResultFrameLayout);
 
         final ParseUser currentUser = ParseUser.getCurrentUser();
+        //commented out below.  Should not need any longer, but in case it will remain until confirmed
+        /*
         ParseQuery<ParseObject> query = ParseQuery.getQuery("FriendRequests");
         query.whereEqualTo("fromUser", currentUser.getObjectId());
         query.orderByDescending("createDate");
@@ -112,6 +115,7 @@ public class FriendActivity extends Activity{
 
         ParseRelation relation = currentUser.getRelation("Friends");
         ParseQuery query2 = relation.getQuery();
+
         query2.orderByAscending("createDate");
         query2.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -155,175 +159,201 @@ public class FriendActivity extends Activity{
                     }
                 }
             }
-        });
+        });*/
 
-            //ResultFrame.setVisibility(View.GONE);
+        //ResultFrame.setVisibility(View.GONE);
 
-            view.setOnClickListener(new View.OnClickListener()
-
-            {
+        view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick (View v){
-                Intent intent = new Intent(FriendActivity.this, ViewFriends.class);
-                startActivity(intent);
-            }
-            }
-
-            );
-
-            pending.setOnClickListener(new View.OnClickListener()
-
-            {
-                @Override
-                public void onClick (View v){
-                Intent intent = new Intent(FriendActivity.this, PendingFriends.class);
-                startActivity(intent);
-            }
-            }
-
-            );
-
-            search.setOnClickListener(new View.OnClickListener()
-
-            {
-
-                @Override
-                public void onClick (View v){
-                final String code = inviteCode.getText().toString();
-
-                final ParseQuery query = ParseUser.getQuery();
-                query.whereEqualTo("objectId", code);
-                query.findInBackground(new FindCallback<ParseObject>() {
-
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-                        try {
-                            userObject = objects.get(0);
-                            Add.setVisibility(View.VISIBLE);
-                            password = userObject.getString("password");
-                            username = userObject.getString("username");
-                            name = userObject.getString("name");
-                            friendId = userObject.getObjectId();
-                            ResultText.setText(username);
-                            ResultText2.setText(name);
-                            ResultText3.setText(friendId);
-                            ResultFrame.setVisibility(View.VISIBLE);
-                            nicknameEdit.setVisibility(View.VISIBLE);
-                            nicknameEdit.setText("");
-                            Message.setText("");
-                            allBox.setChecked(false);
-                            friendBox.setChecked(false);
-                            workBox.setChecked(false);
-                            familyBox.setChecked(false);
-                            personalBox.setChecked(false);
-                            schoolBox.setChecked(false);
-                            Add.setVisibility(View.VISIBLE);
-                            Message.setVisibility(View.VISIBLE);
-                            Toast.makeText(getApplicationContext(), "User Found",
-                                    Toast.LENGTH_LONG).show();
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "User Not Found",
-                                    Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                });
-
-            }
-            }
-
-            );
-
-            Add.setOnClickListener(new View.OnClickListener()
-
-            {
-
-                @Override
-                public void onClick (View v){
-                final ParseUser currentUser = ParseUser.getCurrentUser();
-                if (currentUser != null) {
-                    {
-                        ParseQuery<ParseObject> query1 = ParseQuery.getQuery("FriendRequests");
-                        query1.whereEqualTo("toUser", currentUser.getObjectId());
-                        query1.whereEqualTo("fromUser", friendId);
-                        query1.getFirstInBackground(new GetCallback<ParseObject>() {
-
-                            @Override
-                            public void done(ParseObject object1, ParseException e) {
-                                if (object1 != null) {
-                                    Toast.makeText(getApplicationContext(),
-                                            "This user already sent you a request, check your pending requests",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-                        ParseQuery<ParseObject> query2 = ParseQuery.getQuery("FriendRequests");
-                        query2.whereEqualTo("fromUser", currentUser.getObjectId());
-                        query2.whereEqualTo("toUser", friendId);
-                        query2.getFirstInBackground(new GetCallback<ParseObject>() {
-
-                            @Override
-                            public void done(ParseObject object1, ParseException e) {
-                                if (object1 != null) {
-                                    Toast.makeText(getApplicationContext(), "Please don't send multiple requests to the same person",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-
-                        final Friend friend = new Friend();
-                        friend.put("username", username);
-                        if (name != null) friend.put("name", name);
-                        friend.put("nickname", nicknameEdit.getText().toString());
-                        friend.put("message", Message.getText().toString());
-                        friend.put("all", allBox.isChecked());
-                        friend.put("friend", friendBox.isChecked());
-                        friend.put("family", familyBox.isChecked());
-                        friend.put("work", workBox.isChecked());
-                        friend.put("school", schoolBox.isChecked());
-                        friend.put("personal", personalBox.isChecked());
-                        friend.put("friend_id", friendId);
-                        friend.put("status", "sent");
-
-
-                        final ParseObject friendRequest = new ParseObject("FriendRequests");
-                        friendRequest.put("fromUser", currentUser.getObjectId());
-                        friendRequest.put("toUser", userObject.getObjectId());
-                        friendRequest.put("status", "pending");
-                        friendRequest.put("message", Message.getText().toString());
-                        ParseACL acl = new ParseACL();
-                        acl.setPublicReadAccess(true);
-                        acl.setWriteAccess(ParseUser.getCurrentUser(), true);
-                        acl.setWriteAccess(userObject.getObjectId(), true);
-                        friendRequest.setACL(acl);
-                        friendRequest.saveInBackground();
-
-                        friend.saveInBackground(new SaveCallback() {
-
-                            @Override
-                            public void done(ParseException e) {
-                                ParseRelation relation = currentUser.getRelation("Friends");
-                                relation.add(friend);
-                                currentUser.saveInBackground();
-                            }
-
-                        });
-                        Toast.makeText(getApplicationContext(), "Friend request has been sent!",
-                                Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(FriendActivity.this, FriendActivity.class);
-                        startActivity(intent);
-                    }
+                    Intent intent = new Intent(FriendActivity.this, ViewFriends.class);
+                    startActivity(intent);
                 }
-
-            }
             }
 
-            );
+        );
 
-        }
+        pending.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick (View v){
+                   Intent intent = new Intent(FriendActivity.this, PendingFriends.class);
+                   startActivity(intent);
+               }
+           }
 
-        @Override
+        );
+
+        search.setOnClickListener(new View.OnClickListener() {
+
+              @Override
+              public void onClick (View v){
+                  final String code = inviteCode.getText().toString();
+
+                  final ParseQuery query = ParseUser.getQuery();
+                  query.whereEqualTo("objectId", code);
+                  query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+                      @Override
+                      public void done(ParseObject objects, ParseException e) {
+                          try {
+                              userObject = objects;
+                              Add.setVisibility(View.VISIBLE);
+                              password = userObject.getString("password");
+                              username = userObject.getString("username");
+                              name = userObject.getString("name");
+                              friendId = userObject.getObjectId();
+                              ResultText.setText(username);
+                              ResultText2.setText(name);
+                              ResultText3.setText(friendId);
+                              ResultFrame.setVisibility(View.VISIBLE);
+                              nicknameEdit.setVisibility(View.VISIBLE);
+                              nicknameEdit.setText("");
+                              Message.setText("");
+                              allBox.setChecked(false);
+                              friendBox.setChecked(false);
+                              workBox.setChecked(false);
+                              familyBox.setChecked(false);
+                              personalBox.setChecked(false);
+                              schoolBox.setChecked(false);
+                              Add.setVisibility(View.VISIBLE);
+                              Message.setVisibility(View.VISIBLE);
+                              Toast.makeText(getApplicationContext(), "User Found",
+                                      Toast.LENGTH_LONG).show();
+                          } catch (Exception e2) {
+                              e2.printStackTrace();
+                              Toast.makeText(getApplicationContext(), "User Not Found",
+                                      Toast.LENGTH_LONG).show();
+                          }
+
+                      }
+                  });
+
+              }
+          }
+
+        );
+
+        Add.setOnClickListener(new View.OnClickListener(){
+
+               @Override
+               public void onClick (View v){
+                   final ParseUser currentUser = ParseUser.getCurrentUser();
+                   if (currentUser != null) {
+                       if(friendId.equals(currentUser.getObjectId())){
+                           Toast.makeText(getApplicationContext(), "Please don't send requests to yourself",
+                                   Toast.LENGTH_LONG).show();
+                           Intent intent = new Intent(FriendActivity.this, FriendActivity.class);
+                           startActivity(intent);
+                       }
+                       List<ParseObject> first = new ArrayList<ParseObject>();
+                       ParseQuery<ParseObject> query1 = ParseQuery.getQuery("FriendRequests");
+                       query1.whereEqualTo("toUser", currentUser.getObjectId());
+                       query1.whereEqualTo("fromUser", friendId);
+                       try {
+                           first = query1.find();
+                       } catch (ParseException e) {
+                           e.printStackTrace();
+                       }
+                       if (first.size() > 0) {
+                           Toast.makeText(getApplicationContext(),
+                                   "This user already sent you a request, check your pending requests",
+                                   Toast.LENGTH_LONG).show();
+                           Intent intent = new Intent(FriendActivity.this, FriendActivity.class);
+                           startActivity(intent);
+                       }
+
+                       List<ParseObject> second = new ArrayList<ParseObject>();
+                       ParseQuery<ParseObject> query2 = ParseQuery.getQuery("FriendRequests");
+                       query2.whereEqualTo("fromUser", currentUser.getObjectId());
+                       query2.whereEqualTo("toUser", friendId);
+                       try {
+                           second = query2.find();
+                       } catch (ParseException e) {
+                           e.printStackTrace();
+                       }
+                       if (second.size() > 0) {
+                           Toast.makeText(getApplicationContext(), "Please don't send multiple requests to the same person",
+                                   Toast.LENGTH_LONG).show();
+                           Intent intent = new Intent(FriendActivity.this, FriendActivity.class);
+                           startActivity(intent);
+                       }
+
+                       final Friend friend = new Friend();
+                       friend.put("username", username);
+                       if (name != null) friend.put("name", name);
+                       friend.put("nickname", nicknameEdit.getText().toString());
+                       friend.put("message", Message.getText().toString());
+                       friend.put("all", allBox.isChecked());
+                       friend.put("friend", friendBox.isChecked());
+                       friend.put("family", familyBox.isChecked());
+                       friend.put("work", workBox.isChecked());
+                       friend.put("school", schoolBox.isChecked());
+                       friend.put("personal", personalBox.isChecked());
+                       friend.put("friend_id", friendId);
+                       friend.put("friend_id2", currentUser.getObjectId());
+                       friend.put("status", "sent");
+
+                       ParseACL acl = new ParseACL();
+                       acl.setWriteAccess(ParseUser.getCurrentUser(), true);
+                       acl.setReadAccess(userObject.getObjectId(), true);
+                       acl.setReadAccess(ParseUser.getCurrentUser(), true);
+                       friend.setACL(acl);
+
+                       final ParseObject friendRequest = new ParseObject("FriendRequests");
+                       friendRequest.put("fromUser", currentUser.getObjectId());
+                       friendRequest.put("toUser", userObject.getObjectId());
+                       friendRequest.put("status", "pending");
+                       friendRequest.put("message", Message.getText().toString());
+
+                       ParseACL acl2 = new ParseACL();
+                       acl2.setPublicReadAccess(true);
+                       acl2.setWriteAccess(ParseUser.getCurrentUser(), true);
+                       acl2.setWriteAccess(userObject.getObjectId(), true);
+                       friendRequest.setACL(acl2);
+                       friendRequest.saveInBackground();
+
+                       friend.saveInBackground(new SaveCallback() {
+
+                           @Override
+                           public void done(ParseException e) {
+                               ParseRelation relation = currentUser.getRelation("Friends");
+                               relation.add(friend);
+                               currentUser.saveInBackground();
+                           }
+
+                       });
+
+                       anotif = new Notif();
+                       anotif.setTitle("You sent a friend request!");
+                       anotif.setUuidString();
+                       anotif.setDraft(true);
+                       anotif.saveInBackground(new SaveCallback(){
+
+                           public void done(ParseException e) {
+
+                               // TODO Auto-generated method stub
+                               ParseRelation relation = currentUser.getRelation("Notif");
+                               relation.add(anotif);
+                               currentUser.saveInBackground();
+                           }
+
+                       });
+                       anotif.pinInBackground();
+                       Toast.makeText(getApplicationContext(), "Friend request has been sent!",
+                               Toast.LENGTH_LONG).show();
+                       Intent intent = new Intent(FriendActivity.this, FriendActivity.class);
+                       startActivity(intent);
+
+                   }
+
+               }
+           }
+
+        );
+
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
 

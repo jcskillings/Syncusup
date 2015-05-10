@@ -9,10 +9,12 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -32,15 +35,17 @@ import android.widget.Toast;
 
 import com.parse.CountCallback;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
-@TargetApi(3)
-public class MyCalendarActivity extends Activity implements OnClickListener{
+@TargetApi(9)
+public class FriendCalendarActivity extends Activity implements OnClickListener{
     private static final String tag = "MyCalendarActivity";
-
+    protected ProgressDialog proDialog;
     private TextView currentMonth;
     private Button selectedDayMonthYearButton;
     private ImageView prevMonth;
@@ -55,6 +60,10 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
     @SuppressLint({ "NewApi", "NewApi", "NewApi", "NewApi" })
     private final DateFormat dateFormatter = new DateFormat();
     private static final String dateTemplate = "MMMM yyyy";
+    private String value;
+    private Integer test = 0;
+
+    private final HashMap<String, Integer> idMap = new HashMap<String, Integer>();
 
     /** Called when the activity is first created. */
     @Override
@@ -62,6 +71,10 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_calendar_view);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            value = extras.getString("EXTRA_SESSION_ID");
+        }
 
         _calendar = Calendar.getInstance(Locale.getDefault());
         month = _calendar.get(Calendar.MONTH) + 1;
@@ -91,6 +104,18 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
         adapter.notifyDataSetChanged();
         calendarView.setAdapter(adapter);
 
+    }
+    protected void startLoading() {
+        proDialog = new ProgressDialog(this);
+        proDialog.setMessage("loading...");
+        proDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        proDialog.setCancelable(false);
+        proDialog.show();
+    }
+
+    protected void stopLoading() {
+        proDialog.dismiss();
+        proDialog = null;
     }
 
     /**
@@ -327,49 +352,214 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
          * @param month
          * @return
          */
+        private List<ParseObject> returnList;
+        private List<ParseObject> p;
+
+        private List<ParseObject> returnList2;
         private HashMap<String, Integer> findNumberOfEventsPerMonth(int year,
-                                                                    int month){
+                                                                    int month) {
             final HashMap<String, Integer> map = new HashMap<String, Integer>();
             final int days = getNumberOfDaysOfMonth(month);
-            List<ParseObject> returned = new ArrayList<>();
-            ParseRelation relation = currentUser.getRelation("Events");
-            ParseQuery query = relation.getQuery();
-            query.whereEqualTo("startMonth", month);
-            query.whereEqualTo("startYear", year);
+            final int year1 = year;
+            final int month1 = month;
+            List<String> permissions = new ArrayList<>();
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Friends");
+            query.whereEqualTo("status", "friend");
+            query.whereEqualTo("friend_id", currentUser.getObjectId());
+            query.whereEqualTo("friend_id2", value);
+
             try {
-                returned = query.find();
+                p = query.find();
             } catch (com.parse.ParseException e) {
-                for (int i = 0; i < days; i++) { //initializes them all to 0
-                    String day;
-                    if (i < 10) day = "0" + i;
-                    else day = "" + i;
-                    map.put(day, 0);
-                }
-                return map;
+                e.printStackTrace();
             }
-            for(int i = 0; i < returned.size(); i++){
-                String day;
-                Integer d = returned.get(i).getInt("startDay");
-                if (d < 10) day = "0" + d;
-                else day = "" + d;
-                if(map.containsKey(day)){
-                    Integer val = (Integer) map.get(day)+1;
-                    map.put(day, val);
-                }else{
-                    map.put(day, 1);
+
+            if (p.get(0).getBoolean("all")) {
+                permissions.add("all");
+            } else {
+                permissions.add("everyone");
+                if (p.get(0).getBoolean("work")) permissions.add("work");
+                if (p.get(0).getBoolean("family")) permissions.add("family");
+                if (p.get(0).getBoolean("friend")) permissions.add("friend");
+                if (p.get(0).getBoolean("school")) permissions.add("school");
+                if (p.get(0).getBoolean("personal")) permissions.add("personal");
+            }
+
+            if (permissions.get(0).equals("all")) {
+                ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Event");
+                query2.whereEqualTo("creator", value);
+                query2.whereEqualTo("startMonth", month1);
+                query2.whereEqualTo("startYear", year1);
+
+                try {
+                    returnList2 = query2.find();
+                    stopLoading();
+                } catch (com.parse.ParseException e) {
+                    e.printStackTrace();
+                }
+                if (returnList2.size() > 0) {
+
+                    for (int i = 0; i < returnList2.size(); i++) {
+                        if (returnList2.get(i).getBoolean("private")) continue;
+                        String day;
+                        Integer d = returnList2.get(i).getInt("startDay");
+                        if (d < 10) day = "0" + d;
+                        else day = "" + d;
+                        if (map.containsKey(day)) {
+                            Integer val = (Integer) map.get(day) + 1;
+                            map.put(day, val);
+                        } else {
+                            map.put(day, 1);
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < days; i++) {
+                        String day;
+                        if (i < 10) day = "0" + i;
+                        else day = "" + i;
+                        map.put(day, 0);
+                    }
+                }
+            } else {
+                ParseQuery<ParseObject> mainQuery;
+                if (permissions.size() == 2) {
+                    ParseQuery<ParseObject> first = ParseQuery.getQuery("Event");
+                    first.whereEqualTo(permissions.get(0), true);
+                    ParseQuery<ParseObject> second = ParseQuery.getQuery("Event");
+                    second.whereEqualTo(permissions.get(1), true);
+                    List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+                    queries.add(first);
+                    queries.add(second);
+                    mainQuery = ParseQuery.or(queries);
+                    mainQuery.whereEqualTo("creator", value);
+                    mainQuery.whereEqualTo("startMonth", month1);
+                    mainQuery.whereEqualTo("startYear", year1);
+                    mainQuery.whereNotEqualTo("private", true);
+                } else if (permissions.size() == 3) {
+                    ParseQuery<ParseObject> first = ParseQuery.getQuery("Event");
+                    first.whereEqualTo(permissions.get(0), true);
+                    ParseQuery<ParseObject> second = ParseQuery.getQuery("Event");
+                    second.whereEqualTo(permissions.get(1), true);
+                    ParseQuery<ParseObject> third = ParseQuery.getQuery("Event");
+                    third.whereEqualTo(permissions.get(2), true);
+                    List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+                    queries.add(first);
+                    queries.add(second);
+                    queries.add(third);
+                    mainQuery = ParseQuery.or(queries);
+                    mainQuery.whereEqualTo("creator", value);
+                    mainQuery.whereEqualTo("startMonth", month1);
+                    mainQuery.whereEqualTo("startYear", year1);
+                    mainQuery.whereNotEqualTo("private", true);
+                } else if (permissions.size() == 4) {
+                    ParseQuery<ParseObject> first = ParseQuery.getQuery("Event");
+                    first.whereEqualTo(permissions.get(0), true);
+                    ParseQuery<ParseObject> second = ParseQuery.getQuery("Event");
+                    second.whereEqualTo(permissions.get(1), true);
+                    ParseQuery<ParseObject> third = ParseQuery.getQuery("Event");
+                    third.whereEqualTo(permissions.get(2), true);
+                    ParseQuery<ParseObject> fourth = ParseQuery.getQuery("Event");
+                    fourth.whereEqualTo(permissions.get(3), true);
+                    List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+                    queries.add(first);
+                    queries.add(second);
+                    queries.add(third);
+                    queries.add(fourth);
+                    mainQuery = ParseQuery.or(queries);
+                    mainQuery.whereEqualTo("creator", value);
+                    mainQuery.whereEqualTo("startMonth", month1);
+                    mainQuery.whereEqualTo("startYear", year1);
+                    mainQuery.whereNotEqualTo("private", true);
+                } else if (permissions.size() == 5) {
+                    ParseQuery<ParseObject> first = ParseQuery.getQuery("Event");
+                    first.whereEqualTo(permissions.get(0), true);
+                    ParseQuery<ParseObject> second = ParseQuery.getQuery("Event");
+                    second.whereEqualTo(permissions.get(1), true);
+                    ParseQuery<ParseObject> third = ParseQuery.getQuery("Event");
+                    third.whereEqualTo(permissions.get(2), true);
+                    ParseQuery<ParseObject> fourth = ParseQuery.getQuery("Event");
+                    fourth.whereEqualTo(permissions.get(3), true);
+                    ParseQuery<ParseObject> fifth = ParseQuery.getQuery("Event");
+                    fifth.whereEqualTo(permissions.get(4), true);
+                    List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+                    queries.add(first);
+                    queries.add(second);
+                    queries.add(third);
+                    queries.add(fourth);
+                    queries.add(fifth);
+                    mainQuery = ParseQuery.or(queries);
+                    mainQuery.whereEqualTo("creator", value);
+                    mainQuery.whereEqualTo("startMonth", month1);
+                    mainQuery.whereEqualTo("startYear", year1);
+                    mainQuery.whereNotEqualTo("private", true);
+                } else {
+                    ParseQuery<ParseObject> first = ParseQuery.getQuery("Event");
+                    first.whereEqualTo(permissions.get(0), true);
+                    ParseQuery<ParseObject> second = ParseQuery.getQuery("Event");
+                    second.whereEqualTo(permissions.get(1), true);
+                    ParseQuery<ParseObject> third = ParseQuery.getQuery("Event");
+                    third.whereEqualTo(permissions.get(2), true);
+                    ParseQuery<ParseObject> fourth = ParseQuery.getQuery("Event");
+                    fourth.whereEqualTo(permissions.get(3), true);
+                    ParseQuery<ParseObject> fifth = ParseQuery.getQuery("Event");
+                    fifth.whereEqualTo(permissions.get(4), true);
+                    ParseQuery<ParseObject> sixth = ParseQuery.getQuery("Event");
+                    sixth.whereEqualTo(permissions.get(5), true);
+                    List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+                    queries.add(first);
+                    queries.add(second);
+                    queries.add(third);
+                    queries.add(fourth);
+                    queries.add(fifth);
+                    queries.add(sixth);
+                    mainQuery = ParseQuery.or(queries);
+                    mainQuery.whereEqualTo("creator", value);
+                    mainQuery.whereEqualTo("startMonth", month1);
+                    mainQuery.whereEqualTo("startYear", year1);
+                    mainQuery.whereNotEqualTo("private", true);
+                }
+
+                try {
+                    returnList2 = mainQuery.find();
+                } catch (com.parse.ParseException e1) {
+                    e1.printStackTrace();
+                }
+
+                if (returnList2.size() > 0) {
+                    Toast.makeText(getApplicationContext(), "" + returnList2.size(),
+                            Toast.LENGTH_LONG).show();
+                    for (int i = 0; i < returnList2.size(); i++) {
+                        String day;
+                        Integer d = returnList2.get(i).getInt("startDay");
+                        if (d < 10) day = "0" + d;
+                        else day = "" + d;
+                        if (map.containsKey(day)) {
+                            Integer val = (Integer) map.get(day) + 1;
+                            map.put(day, val);
+                        } else {
+                            map.put(day, 1);
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < days; i++) {
+                        String day;
+                        if (i < 10) day = "0" + i;
+                        else day = "" + i;
+                        map.put(day, 0);
+                    }
                 }
             }
             return map;
-
         }
 
+
         @Override
-        public long getItemId(int position) {
+        public long getItemId ( int position){
             return position;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView ( int position, View convertView, ViewGroup parent){
             View row = convertView;
             if (row == null) {
                 LayoutInflater inflater = (LayoutInflater) _context
@@ -389,8 +579,8 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
             String theday = day_color[0];
             String themonth = day_color[2];
             String theyear = day_color[3];
-            Integer numEvents =0;
-            Calendar cal=Calendar.getInstance();
+            Integer numEvents = 0;
+            Calendar cal = Calendar.getInstance();
             SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
             String month_name = month_date.format(cal.getTime());
             if ((!eventsPerMonthMap.isEmpty()) && (eventsPerMonthMap != null)) {
@@ -398,9 +588,8 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
                     num_events_per_day = (TextView) row
                             .findViewById(R.id.num_events_per_day);
                     numEvents = (Integer) eventsPerMonthMap.get(theday);
-                    //if(numEvents > 0) gridcell.setBackgroundColor(getIntFromColor(255,255,134));
-
-                    if(numEvents > 0 && themonth.equals(month_name)) num_events_per_day.setText(numEvents.toString());
+                    if (numEvents > 0 && themonth.equals(month_name))
+                        num_events_per_day.setText(numEvents.toString());
                 }
             }
 
@@ -420,14 +609,12 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
                         R.color.lightgray02));
             }
 
-
             if (day_color[1].equals("BLUE")) {
-                if(!themonth.equals(month_name)){
+                if (!themonth.equals(month_name)) {
                     gridcell.setTextColor(getResources().getColor(R.color.lightgray02));
-                }
-                else gridcell.setTextColor(getResources().getColor(R.color.orrange));
-            }
-            else {
+                } else
+                    gridcell.setTextColor(getResources().getColor(R.color.orrange));
+            } else {
                 if (numEvents > 0 && themonth.equals(month_name)) gridcell.setTextColor(getIntFromColor(0, 0, 0));
             }
 
@@ -435,14 +622,44 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
         }
 
         @Override
-        public void onClick(View view) {
-            String date_month_year = (String) view.getTag();
+        public void onClick (View view){
+            final String date_month_year = (String) view.getTag();
             selectedDayMonthYearButton.setText("Selected: " + date_month_year);
             Log.e("Selected date", date_month_year);
-            Intent intent = new Intent(getBaseContext(), ViewEventsActivity.class);
-            intent.putExtra("EXTRA_SESSION_ID2",
-                    date_month_year);
-            startActivity(intent);
+
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Friends");
+            query.whereEqualTo("status", "friend");
+            query.whereEqualTo("friend_id", currentUser.getObjectId());
+            query.whereEqualTo("friend_id2", value);
+            query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+                @Override
+                public void done(ParseObject friendObject, com.parse.ParseException e) {
+                    Intent intent = new Intent(getBaseContext(), ViewFriendEventsActivity.class);
+                    String pass = date_month_year;
+                    pass += ","+value;
+                    if (friendObject.getBoolean("all")) {
+                        pass+=",all";
+                    } else {
+                        pass+=",everyone";
+                        if (friendObject.getBoolean("work"))
+                            pass+=",work";
+                        if (friendObject.getBoolean("family"))
+                            pass+=",family";
+                        if (friendObject.getBoolean("friend"))
+                            pass+=",friend";
+                        if (friendObject.getBoolean("school"))
+                            pass+=",school";
+                        if (friendObject.getBoolean("personal"))
+                            pass+=",personal";
+
+                    }
+                    intent.putExtra("EXTRA_SESSION_ID3",pass);
+                    startActivity(intent);
+                }
+            });
+
+
 			/*try {
 				Date parsedDate = dateFormatter.parse(date_month_year);
 				Log.d(tag, "Parsed Date: " + parsedDate.toString());
@@ -452,7 +669,7 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
 			}*/
         }
 
-        public int getIntFromColor(int Red, int Green, int Blue){
+        public int getIntFromColor(int Red, int Green, int Blue) {
             Red = (Red << 16) & 0x00FF0000; //Shift red 16-bits and mask out other stuff
             Green = (Green << 8) & 0x0000FF00; //Shift Green 8-bits and mask out other stuff
             Blue = Blue & 0x000000FF; //Mask out anything not blue.
@@ -461,11 +678,12 @@ public class MyCalendarActivity extends Activity implements OnClickListener{
         }
 
         public boolean onLongClick(View view) {
-            String date_month_year = (String) view.getTag();
-            Intent intent = new Intent(getBaseContext(), AddEventActivity.class);
-            intent.putExtra("EXTRA_SESSION_ID",
-                    date_month_year);
-            startActivity(intent);
+
+            //String date_month_year = (String) view.getTag();
+            //Intent intent = new Intent(getBaseContext(), AddEventActivity.class);
+            //intent.putExtra("EXTRA_SESSION_ID",
+            //        date_month_year);
+            //startActivity(intent);
             return false;
         }
 

@@ -21,6 +21,7 @@ import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -63,10 +64,6 @@ public class PendingFriends extends ListActivity{
                     android.R.layout.simple_list_item_1);
             final ListView friendlv = (ListView) findViewById(android.R.id.list);
             friendlv.setAdapter(listAdapter);
-            //final ArrayAdapter<String> listAdapter2 = new ArrayAdapter<String>(this,
-            //        android.R.layout.simple_list_item_2);
-            //final ListView friendlv2 = (ListView) findViewById(android.R.id.list);
-            //friendlv2.setAdapter(listAdapter2);
 
             final LinearLayout ResultFrame1 = (LinearLayout) findViewById(R.id.frame1);
             final FrameLayout ResultFrame2 = (FrameLayout) findViewById(R.id.frame2);
@@ -228,25 +225,29 @@ public class PendingFriends extends ListActivity{
                     friend.put("school", schoolBox.isChecked());
                     friend.put("personal", personalBox.isChecked());
                     friend.put("friend_id", friendId);
+                    friend.put("friend_id2", currentUser.getObjectId());
                     friend.put("status", "friend");
-
-                    friend.saveInBackground(new SaveCallback() {
-
-                        @Override
-                        public void done(ParseException e) {
-                            // TODO Auto-generated method stub
-                            ParseRelation relation = currentUser.getRelation("Friends");
-                            relation.add(friend);
-                            currentUser.saveInBackground();
-                            Intent intent = new Intent(PendingFriends.this, PendingFriends.class);
-                            startActivity(intent);
-                        }
-
-                    });
+                    ParseACL acl = new ParseACL();
+                    acl.setWriteAccess(ParseUser.getCurrentUser(), true);
+                    acl.setReadAccess(topRequest.getString("fromUser"), true);
+                    acl.setReadAccess(ParseUser.getCurrentUser(), true);
+                    friend.setACL(acl);
+                    try {
+                        friend.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    ParseRelation relation = currentUser.getRelation("Friends");
+                    relation.add(friend);
+                    try {
+                        currentUser.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(getApplicationContext(), "Friend status updated!",
                             Toast.LENGTH_LONG).show();
-
-
+                    Intent intent = new Intent(PendingFriends.this, PendingFriends.class);
+                    startActivity(intent);
                 }
 
             });
@@ -256,7 +257,15 @@ public class PendingFriends extends ListActivity{
                 @Override
                 public void onClick(View v){
                     topRequest.put("status", "ignored");
-                    topRequest.saveInBackground();
+                    try {
+                        topRequest.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(), "Friend status updated!",
+                            Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(PendingFriends.this, PendingFriends.class);
+                    startActivity(intent);
                 }
 
             });

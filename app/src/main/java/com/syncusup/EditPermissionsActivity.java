@@ -154,7 +154,7 @@ public class EditPermissionsActivity extends Activity {
             public void done( Friend object, ParseException e) {
                 if (!isFinishing()) {
                     friend = object;
-                    friendName.setText(friend.getName());
+                    friendName.setText(friend.getUserName());
                     getPermissions();
                 }
                 if (e == null){

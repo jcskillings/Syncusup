@@ -17,6 +17,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import java.util.List;
 public class MenuActivity extends Activity implements View.OnClickListener {
     int objectSize;
     private TextView inviteCode;
+    private Notif anotif;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +60,29 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                     objectSize = objects.size();
                     for (int i = 0; i < objectSize; i++) {
                         final ParseObject r = objects.get(i);
-                        if(r.getString("status").equals("accepted")){
+                        if(r.getString("status").equals("accepted") && r.getString("Checked").equals("No")){
+
+                                                anotif = new Notif();
+                                                anotif.setTitle("You have a new friend!");
+                                                anotif.setUuidString();
+                                                anotif.setDraft(true);
+                                                anotif.pinInBackground();
+
+                                                ParseRelation relation2 = currentUser.getRelation("Notif");
+                                                relation2.add(anotif);
+                                                currentUser.saveInBackground();
+                                                anotif.saveInBackground(new SaveCallback() {
+
+                                                    @Override
+                                                    public void done(ParseException e) {
+
+
+                                                        ParseRelation relation1 = currentUser.getRelation("Notif");
+                                                        relation1.add(anotif);
+                                                        currentUser.saveInBackground();
+
+                                                    }
+                                                });
                             ParseRelation relation = currentUser.getRelation("Friends");
                             ParseQuery query = relation.getQuery();
                             query.findInBackground(new FindCallback<ParseObject>() {
@@ -66,25 +90,32 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                                 @Override
                                 public void done(List<ParseObject> friends, ParseException e) {
                                     String friendId = r.getString("toUser");
-                                    for (int j = 0; j < friends.size(); j++) {
-                                        String thisFriend = friends.get(j).getString("friend_id");
-                                        if(thisFriend.equals(friendId)){
-                                            if(!friends.get(j).getString("status").equals("friend")) {
-                                                friends.get(j).put("status", "friend");
-                                                friends.get(j).saveInBackground();
-                                            }
-                                            try {
-                                                r.delete();
-                                                objectSize--;
-                                            } catch (ParseException e1) {
-                                                Toast.makeText(getApplicationContext(), "unable to delete",
-                                                        Toast.LENGTH_LONG).show();
+                                    if(friends.size() > 0) {
+                                        for (int j = 0; j < friends.size(); j++) {
+                                            String thisFriend = friends.get(j).getString("friend_id");
+                                            if (thisFriend.equals(friendId)) {
+                                                if (!friends.get(j).getString("status").equals("friend")) {
+                                                    friends.get(j).put("status", "friend");
+                                                    friends.get(j).saveInBackground();
+                                                }
+                                                try {
+                                                    r.delete();
+                                                    objectSize--;
+                                                } catch (ParseException e1) {
+                                                    Toast.makeText(getApplicationContext(), "unable to delete",
+                                                            Toast.LENGTH_LONG).show();
+                                                }
                                             }
                                         }
+                                    }
+                                    else {
+                                        Toast.makeText(getApplicationContext(), "ERROR",
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
                         }
+
                         else if(r.getString("status").equals("ignored")){
                             ParseRelation relation = currentUser.getRelation("Friends");
                             ParseQuery query = relation.getQuery();
@@ -93,14 +124,20 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                                 @Override
                                 public void done(List<ParseObject> friends, ParseException e) {
                                     String friendId = r.getString("toUser");
-                                    for (int j = 0; j < friends.size(); j++) {
-                                        String thisFriend = friends.get(j).getString("friend_id");
-                                        if(thisFriend.equals(friendId)){
-                                            if(!friends.get(j).getString("status").equals("theyIgnoredYou")) {
-                                                friends.get(j).put("status", "theyIgnoredYou");
-                                                friends.get(j).saveInBackground();
+                                    if(friends.size() > 0) {
+                                        for (int j = 0; j < friends.size(); j++) {
+                                            String thisFriend = friends.get(j).getString("friend_id");
+                                            if (thisFriend.equals(friendId)) {
+                                                if (!friends.get(j).getString("status").equals("theyIgnoredYou")) {
+                                                    friends.get(j).put("status", "theyIgnoredYou");
+                                                    friends.get(j).saveInBackground();
+                                                }
                                             }
                                         }
+                                    }
+                                    else {
+                                        Toast.makeText(getApplicationContext(), "ERROR",
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
@@ -113,14 +150,20 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                                 @Override
                                 public void done(List<ParseObject> friends, ParseException e) {
                                     String friendId = r.getString("toUser");
-                                    for (int j = 0; j < friends.size(); j++) {
-                                        String thisFriend = friends.get(j).getString("friend_id");
-                                        if(thisFriend.equals(friendId)){
-                                            if(!friends.get(j).getString("status").equals("theyRemovedYou")) {
-                                                friends.get(j).put("status", "theyRemovedYou");
-                                                friends.get(j).saveInBackground();
+                                    if(friends.size() > 0) {
+                                        for (int j = 0; j < friends.size(); j++) {
+                                            String thisFriend = friends.get(j).getString("friend_id");
+                                            if (thisFriend.equals(friendId)) {
+                                                if (!friends.get(j).getString("status").equals("theyRemovedYou")) {
+                                                    friends.get(j).put("status", "theyRemovedYou");
+                                                    friends.get(j).saveInBackground();
+                                                }
                                             }
                                         }
+                                    }
+                                    else {
+                                        Toast.makeText(getApplicationContext(), "ERROR",
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
