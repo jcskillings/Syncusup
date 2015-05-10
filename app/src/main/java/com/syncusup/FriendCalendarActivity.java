@@ -371,20 +371,29 @@ public class FriendCalendarActivity extends Activity implements OnClickListener{
             try {
                 p = query.find();
             } catch (com.parse.ParseException e) {
-                e.printStackTrace();
+                for (int i = 0; i < days; i++) {
+                    String day;
+                    if (i < 10) day = "0" + i;
+                    else day = "" + i;
+                    map.put(day, 0);
+                }
+                return map;
             }
-
-            if (p.get(0).getBoolean("all")) {
-                permissions.add("all");
-            } else {
+            if(p.size() != 0) {
+                if (p.get(0).getBoolean("all")) {
+                    permissions.add("all");
+                } else {
+                    permissions.add("everyone");
+                    if (p.get(0).getBoolean("work")) permissions.add("work");
+                    if (p.get(0).getBoolean("family")) permissions.add("family");
+                    if (p.get(0).getBoolean("friend")) permissions.add("friend");
+                    if (p.get(0).getBoolean("school")) permissions.add("school");
+                    if (p.get(0).getBoolean("personal")) permissions.add("personal");
+                }
+            }else{
                 permissions.add("everyone");
-                if (p.get(0).getBoolean("work")) permissions.add("work");
-                if (p.get(0).getBoolean("family")) permissions.add("family");
-                if (p.get(0).getBoolean("friend")) permissions.add("friend");
-                if (p.get(0).getBoolean("school")) permissions.add("school");
-                if (p.get(0).getBoolean("personal")) permissions.add("personal");
             }
-
+            /*
             if (permissions.get(0).equals("all")) {
                 ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Event");
                 query2.whereEqualTo("creator", value);
@@ -393,9 +402,14 @@ public class FriendCalendarActivity extends Activity implements OnClickListener{
 
                 try {
                     returnList2 = query2.find();
-                    stopLoading();
                 } catch (com.parse.ParseException e) {
-                    e.printStackTrace();
+                    for (int i = 0; i < days; i++) {
+                        String day;
+                        if (i < 10) day = "0" + i;
+                        else day = "" + i;
+                        map.put(day, 0);
+                    }
+                    return map;
                 }
                 if (returnList2.size() > 0) {
 
@@ -418,11 +432,20 @@ public class FriendCalendarActivity extends Activity implements OnClickListener{
                         if (i < 10) day = "0" + i;
                         else day = "" + i;
                         map.put(day, 0);
+                        return map;
                     }
                 }
-            } else {
+            } else {*/
                 ParseQuery<ParseObject> mainQuery;
-                if (permissions.size() == 2) {
+                if (permissions.size() == 1) {
+                    mainQuery = ParseQuery.getQuery("Event");
+                    mainQuery.whereEqualTo(permissions.get(0), true);
+                    mainQuery.whereEqualTo("creator", value);
+                    mainQuery.whereEqualTo("startMonth", month1);
+                    mainQuery.whereEqualTo("startYear", year1);
+                    mainQuery.whereNotEqualTo("private", true);
+                }
+                else if (permissions.size() == 2) {
                     ParseQuery<ParseObject> first = ParseQuery.getQuery("Event");
                     first.whereEqualTo(permissions.get(0), true);
                     ParseQuery<ParseObject> second = ParseQuery.getQuery("Event");
@@ -517,12 +540,18 @@ public class FriendCalendarActivity extends Activity implements OnClickListener{
                     mainQuery.whereEqualTo("startMonth", month1);
                     mainQuery.whereEqualTo("startYear", year1);
                     mainQuery.whereNotEqualTo("private", true);
-                }
+               // }
 
                 try {
                     returnList2 = mainQuery.find();
                 } catch (com.parse.ParseException e1) {
-                    e1.printStackTrace();
+                    for (int i = 0; i < days; i++) {
+                        String day;
+                        if (i < 10) day = "0" + i;
+                        else day = "" + i;
+                        map.put(day, 0);
+                    }
+                    return map;
                 }
 
                 if (returnList2.size() > 0) {
